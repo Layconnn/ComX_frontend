@@ -9,6 +9,7 @@ import ButtonDiv from "@/components/button";
 import FormInput from "@/components/formInput";
 import ErrorMessage from "@/components/errorMessage";
 import { useFormValidation } from "@/hooks/individual/useFormValidation";
+import SpinnerLoader from "@/components/spinnerLoader";
 
 export default function BasicInformation() {
   const router = useRouter();
@@ -82,14 +83,14 @@ export default function BasicInformation() {
         title="Register new account"
         subtitle="Sign up for an account and start trading today"
       >
-        <p className="text-[#1E1E1E] text-[0.875rem] leading-[1.025625rem] mb-[0.875rem]">
+        <p className="text-[#1E1E1E] text-[0.875rem] leading-[1.025625rem] mb-[0.875rem] max-[400px]:text-[0.75rem]">
           Select the category that best describes you
         </p>
         <div className="flex gap-[0.635rem] mb-[1.25rem]">
           <ButtonDiv
             option="Individual"
             onClick={() => handleAccountTypeChange("individual")}
-            className={`flex-1 py-[1.125rem] pl-[2.6875rem] pr-[2.625rem] text-center border transition-colors max-w-[9.125rem] ${
+            className={`flex-1 py-[1.125rem] pl-[2.6875rem] pr-[2.625rem] text-center border transition-colors max-w-[9.125rem] max-[400px]:p-4 ${
               accountType === "individual"
                 ? "bg-black text-white border-black"
                 : "bg-white text-black border-gray-300"
@@ -98,7 +99,7 @@ export default function BasicInformation() {
           <ButtonDiv
             option="Corporate"
             onClick={() => handleAccountTypeChange("corporate")}
-            className={`flex-1 pl-[2.65625rem] pr-[2.59375rem] pt-4 pb-[0.9375rem] text-center border transition-colors max-w-[9.125rem] ${
+            className={`flex-1 pl-[2.65625rem] pr-[2.59375rem] pt-4 pb-[0.9375rem] text-center border transition-colors max-w-[9.125rem] max-[400px]:p-4 ${
               accountType === "corporate"
                 ? "bg-black text-white border-black"
                 : "bg-white text-black border-gray-300"
@@ -150,12 +151,10 @@ export default function BasicInformation() {
             />
             <ButtonDiv
               type="submit"
-              option={`${loading ? "" : "NEXT STEP"}`}
-              className={` ${
-                loading
-                  ? "w-5 h-5 border-4 border-[#D71E0E] border-b-transparent rounded-full inline-block animate-spin mx-auto"
-                  : "outline-none bg-none flex justify-center items-center mx-auto text-[0.875rem] leading-[1.025625rem] text-[#D71E0E] font-medium cursor-pointer"
-              }`}
+              option={`${loading ? <SpinnerLoader /> : "NEXT STEP"}`}
+              className={` 
+                  "outline-none bg-none flex justify-center items-center mx-auto text-[0.875rem] leading-[1.025625rem] text-[#D71E0E] font-medium cursor-pointer"
+              `}
             />
           </form>
         )}

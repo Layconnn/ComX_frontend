@@ -11,6 +11,7 @@ import {
   requestPasswordReset,
   RequestResetPasswordDto,
 } from "@/api/auth/password-reset";
+import SpinnerLoader from "@/components/spinnerLoader";
 
 const PasswordResetPage = () => {
   const [email, setEmail] = useState("");
@@ -89,12 +90,10 @@ const PasswordResetPage = () => {
             />
             <ButtonDiv
               type="submit"
-              option={loading ? "" : "PROCEED"}
-              className={`${
-                loading
-                  ? "w-5 h-5 border-4 border-[#D71E0E] border-b-transparent rounded-full inline-block animate-spin"
-                  : "text-[#D71E0E] hover:text-[#74322c] font-medium text-[0.875rem] leading-[1.025625rem]"
-              }`}
+              option={loading ? <SpinnerLoader /> : "PROCEED"}
+              className={`
+                 "text-[#D71E0E] hover:text-[#74322c] font-medium text-[0.875rem] leading-[1.025625rem]"
+              `}
             />
           </div>
         </form>

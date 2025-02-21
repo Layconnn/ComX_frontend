@@ -9,6 +9,7 @@ import ButtonDiv from "@/components/button";
 import FormInput from "@/components/formInput";
 import ErrorMessage from "@/components/errorMessage";
 import { useCompanyFormValidation } from "@/hooks/corperate/useFormValidation";
+import SpinnerLoader from "@/components/spinnerLoader";
 
 export default function CompanyRegistration() {
   const router = useRouter();
@@ -176,12 +177,10 @@ export default function CompanyRegistration() {
 
             <ButtonDiv
               type="submit"
-              option={loading ? "" : "NEXT STEP"}
-              className={` ${
-                loading
-                  ? "w-5 h-5 border-4 border-[#D71E0E] border-b-transparent rounded-full inline-block animate-spin mx-auto"
+              option={loading ? <SpinnerLoader/> : "NEXT STEP"}
+              className={`
                   : "outline-none bg-none flex justify-center items-center mx-auto text-[0.875rem] leading-[1.025625rem] text-[#D71E0E] font-medium cursor-pointer"
-              }`}
+              `}
             />
           </form>
         )}

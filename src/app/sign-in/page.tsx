@@ -8,6 +8,7 @@ import FormInput from "@/components/formInput";
 import FormWrapper from "@/components/formWrapper";
 import ErrorMessage from "@/components/errorMessage";
 import { login, LoginDto } from "@/api/auth/login";
+import SpinnerLoader from "@/components/spinnerLoader";
 
 const SignInPage = () => {
   const [email, setEmail] = useState("");
@@ -130,7 +131,7 @@ const SignInPage = () => {
               type="submit"
               option={
                 loading ? (
-                  <div className="w-5 h-5 border-2 border-white border-b-transparent rounded-full inline-block animate-spin mx-auto" />
+                  <SpinnerLoader className="border-white" />
                 ) : (
                   "Sign In"
                 )

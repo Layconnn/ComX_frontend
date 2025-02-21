@@ -40,7 +40,7 @@ export default function FormInput({
     <div className="mb-5 max-[640px]:w-full">
       <label
         htmlFor={id}
-        className={`text-[0.875rem] leading-[1.025625rem] ${labelClassName}`}
+        className={`text-[0.875rem] leading-[1.025625rem] max-[400px]:text-[0.75rem] ${labelClassName}`}
       >
         {label}
       </label>

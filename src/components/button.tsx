@@ -19,7 +19,7 @@ export default function ButtonDiv({
       tabIndex={0}
       type={type}
       onClick={onClick}
-      className={`cursor-pointer outline-none transition flex justify-center items-center rounded-[0.125rem] ${className}`}
+      className={`cursor-pointer outline-none transition flex justify-center items-center rounded-[0.125rem] max-[400px]:p-4 ${className}`}
     >
       {option}
     </button>

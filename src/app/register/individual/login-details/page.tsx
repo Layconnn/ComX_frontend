@@ -12,6 +12,7 @@ import ErrorMessage from "@/components/errorMessage";
 import { useFormValidation } from "@/hooks/individual/useFormValidation";
 
 import { registerIndividual, IndividualSignupDto } from "@/api/auth/register";
+import SpinnerLoader from "@/components/spinnerLoader";
 
 export default function IndividualLoginDetails() {
   const router = useRouter();
@@ -140,13 +141,11 @@ export default function IndividualLoginDetails() {
             onClose={() => clearError("phone")}
           />
           <ButtonDiv
-            option={loading ? "" : "VERIFY ACCOUNT"}
+            option={loading ? <SpinnerLoader /> : "VERIFY ACCOUNT"}
             type="submit"
-            className={`${
-              loading
-                ? "w-5 h-5 border-4 border-[#D71E0E] border-b-transparent rounded-full inline-block animate-spin mx-auto"
-                : "outline-none bg-none flex justify-center items-center mx-auto text-[0.875rem] leading-[1.025625rem] text-[#D71E0E] font-medium cursor-pointer"
-            }`}
+            className={`
+                "outline-none bg-none flex justify-center items-center mx-auto text-[0.875rem] leading-[1.025625rem] text-[#D71E0E] font-medium cursor-pointer"
+            `}
           />
         </form>
       </FormWrapper>

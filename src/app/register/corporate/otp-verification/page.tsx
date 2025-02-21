@@ -11,6 +11,7 @@ import ButtonDiv from "@/components/button";
 import ErrorMessage from "@/components/errorMessage";
 import { verifyOtp, VerifyOtpDto } from "@/api/auth/verify-otp";
 import { resendSignUpOtpCode } from "@/api/auth/resendCode";
+import SpinnerLoader from "@/components/spinnerLoader";
 
 export default function CorporateOtpVerification() {
   const router = useRouter();
@@ -139,7 +140,7 @@ export default function CorporateOtpVerification() {
               onClick={handleResendCode}
             >
               {resendLoading ? (
-                <div className="w-5 h-5 border-2 border-[#98A9BCCC] border-b-transparent rounded-full inline-block animate-spin mx-auto" />
+                <SpinnerLoader />
               ) : (
                 "Resend Code"
               )}
@@ -163,12 +164,10 @@ export default function CorporateOtpVerification() {
             />
             <ButtonDiv
               type="submit"
-              option={verifyLoading ? "" : "FINISH"}
-              className={`${
-                verifyLoading
-                  ? "w-5 h-5 border-4 border-[#D71E0E] border-b-transparent rounded-full inline-block animate-spin"
-                  : "text-[#D71E0E] hover:text-[#74322c] font-medium text-[0.875rem] leading-[1.025625rem]"
-              }`}
+              option={verifyLoading ? <SpinnerLoader /> : "FINISH"}
+              className={
+                  "text-[#D71E0E] hover:text-[#74322c] font-medium text-[0.875rem] leading-[1.025625rem]"
+              }
             />
           </div>
         </form>

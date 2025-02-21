@@ -14,6 +14,7 @@ import {
 } from "@/api/auth/verify-otp";
 import { resetPassword, ResetPasswordDto } from "@/api/auth/password-reset";
 import { resendPasswordResetCode } from "@/api/auth/resendCode";
+import SpinnerLoader from "@/components/spinnerLoader";
 
 const PasswordResetOtpValidationPage = () => {
   const router = useRouter();
@@ -186,7 +187,7 @@ const PasswordResetOtpValidationPage = () => {
                 onClick={handleResendCode}
               >
                 {resendLoading ? (
-                  <div className="w-5 h-5 border-2 border-[#98A9BCCC] border-b-transparent rounded-full inline-block animate-spin mx-auto" />
+                  <SpinnerLoader className="border-[#98A9BCCC]" />
                 ) : (
                   "Resend Code"
                 )}
@@ -212,7 +213,7 @@ const PasswordResetOtpValidationPage = () => {
                 type="submit"
                 option={
                   loading ? (
-                    <div className="w-5 h-5 border-4 border-[#D71E0E] border-b-transparent rounded-full inline-block animate-spin mx-auto" />
+                    <SpinnerLoader className="border-[#D71E0E]" />
                   ) : (
                     "VERIFY OTP"
                   )
@@ -262,7 +263,7 @@ const PasswordResetOtpValidationPage = () => {
                 type="submit"
                 option={
                   loading ? (
-                    <div className="w-5 h-5 border-4 border-[#D71E0E] border-b-transparent rounded-full inline-block animate-spin mx-auto" />
+                    <SpinnerLoader />
                   ) : (
                     "RESET PASSWORD"
                   )
