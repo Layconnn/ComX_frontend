@@ -21,8 +21,14 @@ export default function CorporateOtpVerification() {
   const [resendMessage, setResendMessage] = useState<string>("");
   const [resendLoading, setResendLoading] = useState<boolean>(false);
   const [verifyLoading, setVerifyLoading] = useState<boolean>(false);
+  const [companyEmail, setCompanyEmail] = useState<string>("");
 
   useEffect(() => {
+    const step2DataString = localStorage.getItem("corporateRegistrationStep2");
+    if (step2DataString) {
+      const step2Data = JSON.parse(step2DataString);
+      setCompanyEmail(step2Data.companyEmail);
+    }
     setCurrentStep(3);
   }, [setCurrentStep]);
 
@@ -30,10 +36,6 @@ export default function CorporateOtpVerification() {
     setCurrentStep(currentStep - 1);
     router.push("/register/corporate/login-details");
   };
-
-  const step2DataString = localStorage.getItem("corporateRegistrationStep2");
-  const step2Data = step2DataString ? JSON.parse(step2DataString) : {};
-  const email = step2Data.companyEmail || "your email";
 
   const handleFinish = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -119,7 +121,7 @@ export default function CorporateOtpVerification() {
         <form onSubmit={handleFinish}>
           <div className="flex flex-col">
             <FormInput
-              label={`Enter the 4-digit code that was sent to ${email}`}
+              label={`Enter the 4-digit code that was sent to ${companyEmail}`}
               type="text"
               name="otp"
               id="otp"
