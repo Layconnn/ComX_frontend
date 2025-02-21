@@ -6,7 +6,8 @@ import { Slide, ToastContainer, toast } from "react-toastify";
 import Sidebar from "@/components/dashboard/sidebar";
 import TableHeader from "@/components/dashboard/tableHeader";
 import TableRows from "@/components/dashboard/tableRows";
-import SkeletonLoader from "@/components/dashboard/skeletonLoader";
+// import SkeletonLoader from "@/components/dashboard/skeletonLoader";
+import { FadeLoader } from "react-spinners";
 import "react-toastify/dist/ReactToastify.css";
 import { useAuth } from "@/hooks/useAuth";
 import { useRouter } from "next/navigation";
@@ -35,7 +36,9 @@ export default function Dashboard() {
   }, [!loading && user]);
 
   if (loading) {
-    return <SkeletonLoader />;
+    return <div className="flex items-center justify-center mx-auto min-h-screen">
+      <FadeLoader />
+      </div>;
   }
 
   const handleLogout = () => {

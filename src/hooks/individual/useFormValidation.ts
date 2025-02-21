@@ -39,8 +39,9 @@ export const useFormValidation = () => {
       }
     }
 
-    // Phone Number Validation (optional)
-    const phoneRegex = /^\+?[1-9]\d{1,14}$/;
+    // Updated phone regex to allow optional '+' and 10–15 digits
+    const phoneRegex = /^\+?\d{11,15}$/;
+
     if ("phone" in fields && !fields.phone) {
       newErrors.phone = "Your Phone Number is required.";
     } else if (

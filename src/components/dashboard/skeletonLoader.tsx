@@ -1,34 +1,37 @@
-export default function SkeletonLoader() {
+'use client';
+import React from 'react';
+
+export default function IOSSpinner() {
   return (
-    <div className="flex flex-col min-h-screen bg-[#F8FAFB] p-4 animate-pulse">
-      <header className="flex items-center justify-between bg-white shadow px-4 py-4 mb-4">
-        <div className="w-8 h-8 bg-gray-300 rounded"></div>
-        <div className="w-32 h-6 bg-gray-300 rounded"></div>
-        <div className="w-10 h-10 bg-gray-300 rounded-full"></div>
-      </header>
-      <div className="flex flex-1">
-        <aside className="hidden md:flex flex-col w-64 bg-gray-300 p-4 mr-4">
-          <div className="h-16 bg-gray-400 rounded mb-4"></div>
-          <div className="space-y-3">
-            <div className="h-6 bg-gray-400 rounded"></div>
-            <div className="h-6 bg-gray-400 rounded"></div>
-            <div className="h-6 bg-gray-400 rounded"></div>
-            <div className="h-6 bg-gray-400 rounded"></div>
-          </div>
-        </aside>
-        <main className="flex-1 space-y-4">
-          <div className="p-4 bg-white shadow rounded-lg">
-            <div className="h-4 bg-gray-300 rounded mb-2"></div>
-            <div className="h-4 bg-gray-300 rounded mb-2"></div>
-            <div className="h-4 bg-gray-300 rounded mb-2"></div>
-          </div>
-          <div className="p-4 bg-white shadow rounded-lg">
-            <div className="h-6 bg-gray-300 rounded mb-2"></div>
-            <div className="h-6 bg-gray-300 rounded mb-2"></div>
-            <div className="h-6 bg-gray-300 rounded mb-2"></div>
-          </div>
-        </main>
+    <div className="flex items-center justify-center min-h-screen w-full bg-white">
+      {/* Spinner container with relative positioning */}
+      <div className="relative w-12 h-12">
+        {/* Generate 12 bars in a loop */}
+        {Array.from({ length: 12 }).map((_, i) => (
+          <span
+            key={i}
+            className="absolute block w-2 h-5 bg-gray-500 left-5 top-0 rounded"
+            style={{
+              transformOrigin: 'center bottom',
+              transform: `rotate(${(360 / 12) * i}deg)`,
+              animation: 'ios-spinner 1.2s linear infinite',
+              animationDelay: `${i * 0.1}s`,
+            }}
+          />
+        ))}
       </div>
+
+      {/* Inline style for the keyframes (Next.js style JSX) */}
+      <style jsx>{`
+        @keyframes ios-spinner {
+          0% {
+            opacity: 1;
+          }
+          100% {
+            opacity: 0.15;
+          }
+        }
+      `}</style>
     </div>
   );
 }
