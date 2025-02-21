@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Roboto } from "next/font/google";
+import Script from "next/script";
 import "./globals.css";
 
 const roboto = Roboto({
@@ -14,15 +15,28 @@ export const metadata: Metadata = {
 
 export default function RootLayout({
   children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
+}: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="en">
       <body
         className={`${roboto.className} transition-all ease-in-out duration-500 bg-[#F8FAFB] antialiased`}
       >
         {children}
+        <Script id="tawkto-script" strategy="afterInteractive">
+          {`
+            // Start of Tawk.to Script
+            var Tawk_API = Tawk_API || {}, Tawk_LoadStart = new Date();
+            (function(){
+              var s1 = document.createElement("script"), s0 = document.getElementsByTagName("script")[0];
+              s1.async = true;
+              s1.src = 'https://embed.tawk.to/67b7cb30d0ede8190cb34bd0/1ikiv3dhd';
+              s1.charset = 'UTF-8';
+              s1.setAttribute('crossorigin','*');
+              s0.parentNode.insertBefore(s1, s0);
+            })();
+            // End of Tawk.to Script
+          `}
+        </Script>
       </body>
     </html>
   );
