@@ -1,4 +1,3 @@
-// /src/api/auth/verifyOtp.ts
 import axiosInstance from "../axiosInstance";
 
 export interface VerifyOtpDto {

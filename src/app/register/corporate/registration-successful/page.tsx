@@ -1,6 +1,6 @@
 /* eslint-disable @next/next/no-img-element */
 "use client";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useRegistration } from "@/contexts/registrationContext";
 import StepProgress from "@/components/stepProgress";
 import FormWrapper from "@/components/formWrapper";
@@ -10,9 +10,15 @@ import { useRouter } from "next/navigation";
 
 export default function CorporateRegistrationSuccessful() {
   const { currentStep, setCurrentStep } = useRegistration();
+  const [companyName, setCompanyName] = useState<string>("");
   const router = useRouter();
 
   useEffect(() => {
+    const step1DataString = localStorage.getItem("corporateRegistrationStep1");
+    if (step1DataString) {
+      const step1Data = JSON.parse(step1DataString);
+      setCompanyName(step1Data.companyName);
+    }
     toast.success("Registration Successful!", {
       position: "top-right",
       autoClose: 2000,
@@ -26,10 +32,6 @@ export default function CorporateRegistrationSuccessful() {
     });
     setCurrentStep(4);
   }, [setCurrentStep]);
-
-  const step1DataString = localStorage.getItem("corporateRegistrationStep1");
-  const step1Data = step1DataString ? JSON.parse(step1DataString) : {};
-  const companyName = step1Data.companyName;
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-gray-100 p-4">

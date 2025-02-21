@@ -11,21 +11,18 @@ import ButtonDiv from "@/components/button";
 import ErrorMessage from "@/components/errorMessage";
 import { useFormValidation } from "@/hooks/individual/useFormValidation";
 
-// Import the registerIndividual API function
 import { registerIndividual, IndividualSignupDto } from "@/api/auth/register";
 
 export default function IndividualLoginDetails() {
   const router = useRouter();
   const { currentStep, setCurrentStep } = useRegistration();
 
-  // Form field states
   const [password, setPassword] = useState<string>("");
   const [confirmPassword, setConfirmPassword] = useState<string>("");
   const [phone, setPhone] = useState<string>("");
   const [error, setError] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(false);
 
-  // Validation hook
   const { errors, validateFields, clearError } = useFormValidation();
 
   useEffect(() => {
@@ -35,10 +32,8 @@ export default function IndividualLoginDetails() {
   const handleVerifyAccount = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    // Collect field values
     const fields = { password, confirmPassword, phone };
 
-    // Validate fields
     const isValid = validateFields(fields);
     if (!isValid) {
       setError("Please fill in all required fields correctly.");
@@ -50,7 +45,6 @@ export default function IndividualLoginDetails() {
     }
     setError("");
 
-    // Retrieve basic registration data from localStorage (Step 1)
     const step1DataString = localStorage.getItem("registrationStep1");
     if (!step1DataString) {
       setError("Registration data missing. Please start over.");
@@ -58,7 +52,6 @@ export default function IndividualLoginDetails() {
     }
     const step1Data = JSON.parse(step1DataString);
 
-    // Combine Step 1 and Step 2 data to form the complete payload
     const dto: IndividualSignupDto = {
       firstName: step1Data.firstName,
       lastName: step1Data.lastName,
@@ -67,12 +60,10 @@ export default function IndividualLoginDetails() {
       password: password,
     };
 
-    // Set loader state and call the registerIndividual API
     setLoading(true);
     try {
       const response = await registerIndividual(dto);
       console.log("API response:", response);
-      // On success, route to the OTP verification page
       setCurrentStep(3);
       router.push("/register/individual/otp-validation");
     } catch (apiError: any) {

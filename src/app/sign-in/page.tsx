@@ -41,7 +41,6 @@ const SignInPage = () => {
       return;
     }
 
-    // Clear global error before API call
     setGlobalError("");
     setLoading(true);
 
@@ -50,9 +49,7 @@ const SignInPage = () => {
     try {
       const response = await login(dto);
       console.log("Login successful:", response);
-      // Store the token (for example, in localStorage)
       localStorage.setItem("access_token", response.access_token);
-      // Navigate to the dashboard page
       router.push("/dashboard/market/order-book");
     } catch (error: any) {
       console.error(error);

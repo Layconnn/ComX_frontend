@@ -1,48 +1,33 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @next/next/no-img-element */
 "use client";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 import FormWrapper from "@/components/formWrapper";
 import FormInput from "@/components/formInput";
 import ButtonDiv from "@/components/button";
 import ErrorMessage from "@/components/errorMessage";
-// Import the API function for verifying OTP for password reset
 import {
   verifyResetOtp,
   VerifyResetOtpDto,
   VerifyResetOtpResponse,
 } from "@/api/auth/verify-otp";
-// Import the API function for resetting the password
 import { resetPassword, ResetPasswordDto } from "@/api/auth/password-reset";
 import { resendPasswordResetCode } from "@/api/auth/resendCode";
 
 const PasswordResetOtpValidationPage = () => {
   const router = useRouter();
-
-  // OTP and email state
   const [otp, setOtp] = useState<string>("");
   const [otpError, setOtpError] = useState<string>("");
-
-  // States for new password inputs (hidden until OTP is verified)
   const [newPassword, setNewPassword] = useState<string>("");
   const [confirmPassword, setConfirmPassword] = useState<string>("");
   const [passwordError, setPasswordError] = useState<string>("");
-
-  // Global error state and loading states
   const [globalError, setGlobalError] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(false);
   const [resendMessage, setResendMessage] = useState<string>("");
   const [resendLoading, setResendLoading] = useState<boolean>(false);
-
-  // State to track whether the OTP has been verified
   const [otpVerified, setOtpVerified] = useState<boolean>(false);
 
-  useEffect(() => {
-    // You might optionally check for stored email or initialize animations here.
-  }, []);
-
-  // Step 1: Verify OTP (without updating password)
   const handleVerifyOtp = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -52,7 +37,6 @@ const PasswordResetOtpValidationPage = () => {
     }
     setOtpError("");
 
-    // Retrieve the email from localStorage (stored under "resetEmail" on password reset request)
     const storedEmail = localStorage.getItem("resetEmail");
     if (!storedEmail) {
       setOtpError(
@@ -66,15 +50,12 @@ const PasswordResetOtpValidationPage = () => {
 
     setLoading(true);
     try {
-      // Call the endpoint that verifies the OTP only (without updating the password)
       const response: VerifyResetOtpResponse = await verifyResetOtp(dto);
       console.log("OTP verified successfully:", response);
-      setOtpVerified(true); // OTP is valid, reveal new password inputs
-      // Optionally, you might remove the OTP from localStorage here if desired.
+      setOtpVerified(true);
     } catch (error: any) {
       console.error(error);
       const backendMsg = error.response?.data?.message;
-      // If the backend returns "Incorrect OTP code.", display "OTP code invalid"
       setOtpError(
         backendMsg === "Incorrect OTP code."
           ? "OTP code invalid"
@@ -85,11 +66,9 @@ const PasswordResetOtpValidationPage = () => {
     }
   };
 
-  // Step 2: Reset Password (after OTP is verified)
   const handleResetPassword = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    // Validate new password fields
     if (!newPassword || !confirmPassword) {
       setPasswordError("Both password fields are required.");
       return;
@@ -109,7 +88,6 @@ const PasswordResetOtpValidationPage = () => {
     }
     const email = storedEmail;
 
-    // Construct DTO for resetting password. Use the OTP that was already verified.
     const dto: ResetPasswordDto = { email, token: otp, newPassword };
 
     setLoading(true);
@@ -117,7 +95,6 @@ const PasswordResetOtpValidationPage = () => {
       const response = await resetPassword(dto);
       console.log("Password reset successfully:", response);
       localStorage.removeItem("resetEmail");
-      // Optionally store the token, then route to sign-in
       localStorage.setItem("access_token", response.access_token);
       router.push("/sign-in");
     } catch (error: any) {
@@ -131,7 +108,6 @@ const PasswordResetOtpValidationPage = () => {
     }
   };
 
-  // Resend OTP code for password reset
   const handleResendCode = async () => {
     const storedEmail = localStorage.getItem("resetEmail");
     if (!storedEmail) {
@@ -187,7 +163,6 @@ const PasswordResetOtpValidationPage = () => {
         subtitle="Reset your password to continue trading on ComX"
       >
         {!otpVerified ? (
-          // Step 1: OTP Verification Form
           <form onSubmit={handleVerifyOtp}>
             <div className="flex flex-col">
               <FormInput

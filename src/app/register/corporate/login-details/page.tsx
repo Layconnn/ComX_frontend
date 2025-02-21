@@ -10,22 +10,17 @@ import FormInput from "@/components/formInput";
 import ButtonDiv from "@/components/button";
 import ErrorMessage from "@/components/errorMessage";
 import { useCompanyFormValidation } from "@/hooks/corperate/useFormValidation";
-
-// Import the registerCorporate API function
 import { registerCorporate, CorporateSignupDto } from "@/api/auth/register";
 
 export default function CorporateLoginDetails() {
   const router = useRouter();
   const { currentStep, setCurrentStep } = useRegistration();
 
-  // Form field states
   const [password, setPassword] = useState<string>("");
   const [confirmPassword, setConfirmPassword] = useState<string>("");
   const [emailValue, setEmailValue] = useState<string>("");
   const [error, setError] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(false);
-
-  // Validation hook for corporate login details
   const { errors, validateFields, clearError } = useCompanyFormValidation();
 
   useEffect(() => {
@@ -78,7 +73,6 @@ export default function CorporateLoginDetails() {
       const response = await registerCorporate(dto);
       console.log("API response:", response);
       setCurrentStep(3);
-      // Route only on success
       router.push("/register/corporate/otp-verification");
     } catch (apiError: any) {
       console.error(apiError);

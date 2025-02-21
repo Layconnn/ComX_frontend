@@ -1,4 +1,3 @@
-// src/app/register/individual/layout.tsx
 "use client";
 import { RegistrationProvider } from "@/contexts/registrationContext";
 

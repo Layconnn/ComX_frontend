@@ -1,4 +1,3 @@
-// /src/api/auth/resendCodeEmail.ts
 import axiosInstance from "../axiosInstance";
 
 export interface ResendCodeEmailResponse {

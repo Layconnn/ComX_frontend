@@ -16,31 +16,16 @@ export default function CompanyRegistration() {
   const [accountType, setAccountType] = useState<"individual" | "corporate">(
     "corporate"
   );
-
-  // Field states
   const [companyName, setCompanyName] = useState<string>("");
   const [businessType, setBusinessType] = useState<string>("");
   const [dateOfIncorporation, setDateOfIncorporation] = useState("");
   const [globalError, setGlobalError] = useState<string>("");
-
-  // Loading state for the API call simulation
   const [loading, setLoading] = useState<boolean>(false);
-
-  // Validation hook
   const { errors, validateFields, clearError } = useCompanyFormValidation();
 
   useEffect(() => {
     setCurrentStep(1);
   }, [setCurrentStep]);
-
-  localStorage.setItem(
-    "corporateRegistrationStep1",
-    JSON.stringify({
-      companyName,
-      businessType,
-      dateOfIncorporation,
-    })
-  );
 
   const handleAccountTypeChange = (type: "individual" | "corporate") => {
     if (type === "individual") {
@@ -67,7 +52,6 @@ export default function CompanyRegistration() {
     setGlobalError("");
     console.log("Form submitted:", fields);
 
-    // Store the first step data in localStorage
     localStorage.setItem(
       "corporateRegistrationStep1",
       JSON.stringify({
@@ -77,7 +61,6 @@ export default function CompanyRegistration() {
       })
     );
 
-    // Set loading state to true, simulate a delay, then route to the next step
     setLoading(true);
     setTimeout(() => {
       setCurrentStep(2);

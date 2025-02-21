@@ -15,19 +15,19 @@ import { verifyOtp, VerifyOtpDto } from "@/api/auth/verify-otp";
 export default function IndividualOtpVerification() {
   const router = useRouter();
   const { currentStep, setCurrentStep } = useRegistration();
-
-  // OTP state and error message
   const [otp, setOtp] = useState<string>("");
   const [otpError, setOtpError] = useState<string>("");
-
-  // For showing success message after resend
   const [resendMessage, setResendMessage] = useState<string>("");
-
-  // Loading state for the resend code action and verify API call
   const [resendLoading, setResendLoading] = useState<boolean>(false);
   const [verifyLoading, setVerifyLoading] = useState<boolean>(false);
+  const [email, setEmail] = useState<string>("");
 
   useEffect(() => {
+    const step1DataString = localStorage.getItem("registrationStep1");
+    if (step1DataString) {
+      const step1Data = JSON.parse(step1DataString);
+      setEmail(step1Data.email);
+    }
     setCurrentStep(3);
   }, [setCurrentStep]);
 
@@ -36,10 +36,6 @@ export default function IndividualOtpVerification() {
     router.push("/register/individual/login-details");
   };
 
-  const step1DataString = localStorage.getItem("registrationStep1");
-  const step1Data = step1DataString ? JSON.parse(step1DataString) : {};
-  const email = step1Data.email;
-
   const handleFinish = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -47,11 +43,8 @@ export default function IndividualOtpVerification() {
       setOtpError("OTP is required.");
       return;
     }
-
-    // Clear error and proceed to call the API
     setOtpError("");
 
-    // Retrieve email from localStorage and build the payload
     const step1DataString = localStorage.getItem("registrationStep1");
     if (!step1DataString) {
       setOtpError("Registration data missing. Please start over.");
@@ -68,7 +61,6 @@ export default function IndividualOtpVerification() {
     setVerifyLoading(true);
     try {
       const response = await verifyOtp(dto);
-      // Save token and proceed
       localStorage.setItem("access_token", response.access_token);
       setCurrentStep(currentStep + 1);
       router.push("/register/individual/registration-successful");
@@ -83,9 +75,7 @@ export default function IndividualOtpVerification() {
     }
   };
 
-  // Handler for resending the verification code via email only
   const handleResendCode = async () => {
-    // Retrieve email from localStorage
     const step1DataString = localStorage.getItem("registrationStep1");
     if (!step1DataString) {
       setResendMessage("No email found. Please restart registration.");
@@ -152,7 +142,6 @@ export default function IndividualOtpVerification() {
               maxLength={4}
             />
 
-            {/* Resend Code button */}
             <h5
               className="text-center text-[#98A9BCCC] text-[0.75rem] leading-[1.3125rem] mb-[12.3125rem] cursor-pointer"
               onClick={handleResendCode}

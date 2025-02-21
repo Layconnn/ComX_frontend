@@ -5,7 +5,7 @@ interface FormWrapperProps {
   title: string;
   subtitle: string;
   children: React.ReactNode;
-  success?: boolean; // If true, show the logo image above the title.
+  success?: boolean;
 }
 
 export default function FormWrapper({

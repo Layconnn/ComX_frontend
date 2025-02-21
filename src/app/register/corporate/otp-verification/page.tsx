@@ -33,7 +33,7 @@ export default function CorporateOtpVerification() {
 
   const step2DataString = localStorage.getItem("corporateRegistrationStep2");
   const step2Data = step2DataString ? JSON.parse(step2DataString) : {};
-  const email = step2Data.companyEmail || "your email"; // Fallback text if needed
+  const email = step2Data.companyEmail || "your email";
 
   const handleFinish = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -43,7 +43,6 @@ export default function CorporateOtpVerification() {
       return;
     }
 
-    // Retrieve corporate email from localStorage (Step 1)
     const step2DataString = localStorage.getItem("corporateRegistrationStep2");
     if (!step2DataString) {
       setOtpError("Registration data missing. Please restart registration.");
@@ -75,7 +74,6 @@ export default function CorporateOtpVerification() {
   };
 
   const handleResendCode = async () => {
-    // Retrieve email from localStorage (Step 1)
     const step2DataString = localStorage.getItem("corporateRegistrationStep2");
     if (!step2DataString) {
       setResendMessage("No email found. Please restart registration.");

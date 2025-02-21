@@ -10,8 +10,8 @@ export interface IndividualSignupDto {
 
 export interface CorporateSignupDto {
   companyName: string;
-  businessType: string; // adjust type as needed (could be enum)
-  dateOfIncorporation: string; // in ISO format (YYYY-MM-DD)
+  businessType: string;
+  dateOfIncorporation: string;
   companyEmail: string;
   password: string;
 }

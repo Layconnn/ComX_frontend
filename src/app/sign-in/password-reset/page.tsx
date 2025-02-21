@@ -7,7 +7,6 @@ import FormInput from "@/components/formInput";
 import ErrorMessage from "@/components/errorMessage";
 import ButtonDiv from "@/components/button";
 import { useRouter } from "next/navigation";
-// Import the API function for requesting a password reset
 import {
   requestPasswordReset,
   RequestResetPasswordDto,
@@ -27,7 +26,6 @@ const PasswordResetPage = () => {
     }
     setError("");
 
-    // Store the email in localStorage for later use in OTP verification.
     localStorage.setItem("resetEmail", email);
 
     setLoading(true);
@@ -36,7 +34,6 @@ const PasswordResetPage = () => {
     try {
       const response = await requestPasswordReset(dto);
       console.log("Password reset requested:", response);
-      // On success, route to the OTP validation page
       router.push("/sign-in/password-reset/otp-validation");
     } catch (err: any) {
       console.error(err);

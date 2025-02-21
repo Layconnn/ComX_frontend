@@ -17,16 +17,10 @@ export default function BasicInformation() {
     "individual"
   );
   const [error, setError] = useState<string>("");
-
-  // States for individual form fields
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [emailValue, setEmailValue] = useState("");
-
-  // Loading state for API call simulation
   const [loading, setLoading] = useState(false);
-
-  // Validation hook
   const { errors, validateFields, clearError } = useFormValidation();
 
   useEffect(() => {
@@ -44,31 +38,24 @@ export default function BasicInformation() {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
-    // Collect field values
     const fields = {
       firstName,
       lastName,
       email: emailValue,
     };
 
-    // Validate fields
     const isValid = validateFields(fields);
     if (!isValid) {
       setError("Please fill in all required fields correctly.");
       return;
     }
 
-    // Clear error if validation passes
     setError("");
 
-    // Store the first step data in localStorage
     const step1Data = { firstName, lastName, email: emailValue };
     localStorage.setItem("registrationStep1", JSON.stringify(step1Data));
 
-    // Set loader state to true (simulate API call)
     setLoading(true);
-
-    // Simulate a delay (e.g., 1 second) then proceed to the next step
     setTimeout(() => {
       setCurrentStep(2);
       router.push("/register/individual/login-details");
@@ -173,8 +160,6 @@ export default function BasicInformation() {
           </form>
         )}
       </FormWrapper>
-
-      {/* Step Progress at the bottom */}
       <StepProgress currentStep={currentStep} totalSteps={4} />
     </div>
   );

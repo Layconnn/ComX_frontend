@@ -24,7 +24,7 @@ export default function ErrorMessage({
     if (!isVisible) {
       const timer = setTimeout(() => {
         onClose();
-      }, 300); // 300ms corresponds to our transition duration
+      }, 300);
       return () => clearTimeout(timer);
     }
   }, [isVisible, onClose]);

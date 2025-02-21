@@ -1,6 +1,6 @@
 /* eslint-disable @next/next/no-img-element */
 "use client";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useRegistration } from "@/contexts/registrationContext";
 import StepProgress from "@/components/stepProgress";
 import FormWrapper from "@/components/formWrapper";
@@ -10,13 +10,15 @@ import { Slide, ToastContainer, toast } from "react-toastify";
 
 export default function CorporateRegistrationSuccessful() {
   const { currentStep, setCurrentStep } = useRegistration();
+  const [firstName, setFirstName] = useState("");
   const router = useRouter();
 
-  const step1DataString = localStorage.getItem("registrationStep1");
-  const step1Data = step1DataString ? JSON.parse(step1DataString) : {};
-  const fName = step1Data.firstName;
-
   useEffect(() => {
+    const step1DataString = localStorage.getItem("registrationStep1");
+    if (step1DataString) {
+      const step1Data = JSON.parse(step1DataString);
+      setFirstName(step1Data.firstName);
+    }
     toast.success("Registration Successful!", {
       position: "top-right",
       autoClose: 2000,
@@ -38,7 +40,7 @@ export default function CorporateRegistrationSuccessful() {
       </div>
       <FormWrapper
         title="Registration Complete"
-        subtitle={`Dear ${fName}. Your registration is now complete.
+        subtitle={`Dear ${firstName}. Your registration is now complete.
 You  may proceed to your dashboard and start trading commodities.`}
         success={true}
       >
