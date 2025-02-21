@@ -178,9 +178,8 @@ export default function CompanyRegistration() {
             <ButtonDiv
               type="submit"
               option={loading ? <SpinnerLoader/> : "NEXT STEP"}
-              className={`
-                  : "outline-none bg-none flex justify-center items-center mx-auto text-[0.875rem] leading-[1.025625rem] text-[#D71E0E] font-medium cursor-pointer"
-              `}
+              className="outline-none bg-none flex justify-center items-center mx-auto text-[0.875rem] leading-[1.025625rem] text-[#D71E0E] font-medium cursor-pointer"
+              
             />
           </form>
         )}

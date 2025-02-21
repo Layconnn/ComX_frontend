@@ -165,9 +165,8 @@ export default function CorporateOtpVerification() {
             <ButtonDiv
               type="submit"
               option={verifyLoading ? <SpinnerLoader /> : "FINISH"}
-              className={
+              className=
                   "text-[#D71E0E] hover:text-[#74322c] font-medium text-[0.875rem] leading-[1.025625rem]"
-              }
             />
           </div>
         </form>

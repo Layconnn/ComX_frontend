@@ -143,9 +143,8 @@ export default function IndividualLoginDetails() {
           <ButtonDiv
             option={loading ? <SpinnerLoader /> : "VERIFY ACCOUNT"}
             type="submit"
-            className={`
+            className=
                 "outline-none bg-none flex justify-center items-center mx-auto text-[0.875rem] leading-[1.025625rem] text-[#D71E0E] font-medium cursor-pointer"
-            `}
           />
         </form>
       </FormWrapper>

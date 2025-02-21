@@ -90,19 +90,19 @@ export default function BasicInformation() {
           <ButtonDiv
             option="Individual"
             onClick={() => handleAccountTypeChange("individual")}
-            className={`flex-1 py-[1.125rem] pl-[2.6875rem] pr-[2.625rem] text-center border transition-colors max-w-[9.125rem] max-[400px]:p-4 ${
+            className={`flex-1 py-[1.125rem] pl-[2.6875rem] pr-[2.625rem] text-center border transition-colors max-w-[9.125rem] max-[400px]:p-4 hover:bg-violet-700  ${
               accountType === "individual"
-                ? "bg-black text-white border-black"
-                : "bg-white text-black border-gray-300"
+                ? "bg-black text-white border-black hover:bg-[#ba473d]"
+                : "bg-white text-black border-gray-300 hover:bg-gray-100"
             }`}
           />
           <ButtonDiv
             option="Corporate"
             onClick={() => handleAccountTypeChange("corporate")}
-            className={`flex-1 pl-[2.65625rem] pr-[2.59375rem] pt-4 pb-[0.9375rem] text-center border transition-colors max-w-[9.125rem] max-[400px]:p-4 ${
+            className={`flex-1 pl-[2.65625rem] pr-[2.59375rem] pt-4 pb-[0.9375rem] text-center border transition-colors max-w-[9.125rem] max-[400px]:p-4 hover:bg-indigo-700 ${
               accountType === "corporate"
-                ? "bg-black text-white border-black"
-                : "bg-white text-black border-gray-300"
+                ? "bg-black text-white border-black hover:bg-[#ba473d]"
+                : "bg-white text-black border-gray-300 hover:bg-gray-100"
             }`}
           />
         </div>
@@ -151,10 +151,8 @@ export default function BasicInformation() {
             />
             <ButtonDiv
               type="submit"
-              option={`${loading ? <SpinnerLoader /> : "NEXT STEP"}`}
-              className={` 
-                  "outline-none bg-none flex justify-center items-center mx-auto text-[0.875rem] leading-[1.025625rem] text-[#D71E0E] font-medium cursor-pointer"
-              `}
+              option={loading ? <SpinnerLoader/> : "NEXT STEP"}
+              className="outline-none bg-none mt-[1.3125rem] flex justify-center items-center mx-auto text-[0.875rem] leading-[1.025625rem] text-[#D71E0E] font-medium cursor-pointer"
             />
           </form>
         )}

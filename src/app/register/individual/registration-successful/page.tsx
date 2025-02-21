@@ -7,18 +7,27 @@ import FormWrapper from "@/components/formWrapper";
 import ButtonDiv from "@/components/button";
 import { useRouter } from "next/navigation";
 import { Slide, ToastContainer, toast } from "react-toastify";
+import SpinnerLoader from "@/components/spinnerLoader";
 
 export default function CorporateRegistrationSuccessful() {
   const { currentStep, setCurrentStep } = useRegistration();
-  const [firstName, setFirstName] = useState("");
+  const [firstName, setFirstName] = useState<string>("");
+  const [loading, setLoading] = useState<boolean>(false);
   const router = useRouter();
 
   useEffect(() => {
+    const accessToken = localStorage.getItem("access_token");
+    if (!accessToken) {
+      router.push("/register/individual/basic-information");
+      return;
+    }
+
     const step1DataString = localStorage.getItem("registrationStep1");
     if (step1DataString) {
       const step1Data = JSON.parse(step1DataString);
       setFirstName(step1Data.firstName);
     }
+
     toast.success("Registration Successful!", {
       position: "top-right",
       autoClose: 2000,
@@ -30,8 +39,10 @@ export default function CorporateRegistrationSuccessful() {
       theme: "light",
       transition: Slide,
     });
+
+    // 4. Update current step
     setCurrentStep(4);
-  }, [setCurrentStep]);
+  }, [setCurrentStep, router]);
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-gray-100 p-4">
@@ -45,9 +56,17 @@ You  may proceed to your dashboard and start trading commodities.`}
         success={true}
       >
         <ButtonDiv
-          option="GO TO DASHBOARD"
-          onClick={() => router.push("/dashboard")}
-          className="text-[#D71E0E] hover:text-[#ba473d] font-medium text-[0.75rem] leading-[1.025625rem] text-center cursor-pointer mx-auto"
+          option={loading ? <SpinnerLoader /> : "GO TO DASHBOARD"}
+          onClick={() => {
+            setLoading(true);
+            setTimeout(() => {
+              setCurrentStep(4);
+              router.push("/dashboard");
+              setLoading(false);
+            }, 1000);
+          }}
+          className=
+              "text-[#D71E0E] hover:text-[#ba473d] font-medium text-[0.75rem] leading-[1.025625rem] text-center cursor-pointer mx-auto"
         />
       </FormWrapper>
       <StepProgress currentStep={currentStep} totalSteps={4} />
