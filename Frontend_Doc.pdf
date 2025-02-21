@@ -1,0 +1,166 @@
+ComX Frontend Documentation
+Overview
+ComX is a modern, production-ready web application built with Next.js, TypeScript, and Tailwind CSS. The application is designed to offer seamless registration flows (for both individual and corporate users), a dynamic dashboard, and integrated chat support. It utilizes Axios for API interactions, React Toastify for notifications, and custom hooks and context for state management and authentication.
+
+This documentation outlines the tech stacks used, the folder structure, the application routes, and the key features implemented in the frontend.
+
+Technology Stack
+Next.js & React
+
+Server-side rendering and static generation for performance and SEO.
+Component-based architecture for reusability and modularity.
+TypeScript
+
+Provides static type-checking for improved code reliability and maintainability.
+Tailwind CSS
+
+Utility-first styling framework that enables rapid UI development.
+Fully responsive, mobile-first design.
+Axios
+
+Centralized API calls via an Axios instance configured with environment variables (e.g., NEXT_PUBLIC_API_URL).
+React Toastify
+
+Non-blocking toast notifications with customizable transitions and themes.
+Custom Hooks & Context
+
+useAuth for authentication and route protection.
+useFormValidation and useCompanyFormValidation for dynamic form validation.
+React Context (e.g., registrationContext) for managing multi-step registration flows.
+Chat Integration
+
+Integrated Tawk.to widget for live chat support via Next.js's <Script> component.
+Folder Structure
+graphql
+Copy
+Edit
+my-nextjs-app/
+├── public/
+│   ├── logo.svg
+│   ├── avatar.jpg
+│   └── icons/               # e.g., arrow icons for dropdowns
+├── src/
+│   ├── api/                 # API integration using Axios
+│   │   ├── axiosInstance.ts
+│   │   └── auth/
+│   │       ├── login.ts
+│   │       ├── password-reset.ts
+│   │       ├── register.ts
+│   │       └── resendCode.ts
+│   ├── components/          # Reusable UI components
+│   │   ├── button.tsx
+│   │   ├── errorMessage.tsx
+│   │   ├── formInput.tsx
+│   │   ├── formWrapper.tsx
+│   │   ├── skeletonLoader.tsx
+│   │   ├── sidebar.tsx
+│   │   ├── tableHeader.tsx
+│   │   └── tableRows.tsx
+│   ├── contexts/            # Global state management (e.g., registrationContext.tsx)
+│   ├── hooks/               # Custom hooks
+│   │   ├── individual/
+│   │   │   └── useFormValidation.ts
+│   │   ├── corporative/
+│   │   │   └── useFormValidation.ts
+│   │   └── useAuth.ts
+│   ├── pages/               # Page-based routing (or use /app for the App Router)
+│   │   ├── dashboard/
+│   │   │   └── order-book.tsx
+│   │   └── register/
+│   │       ├── individual/
+│   │       │   ├── basic-information.tsx
+│   │       │   ├── login-details.tsx
+│   │       │   └── otp-verification.tsx
+│   │       └── corporative/
+│   │           └── registration-successful.tsx
+│   └── styles/              # Global CSS and Tailwind configuration
+│       └── globals.css
+├── next.config.ts           # Next.js configuration file
+├── .env                     # Environment variables (NEXT_PUBLIC_API_URL, etc.)
+└── package.json
+Application Routes & Navigation
+The application has a clear separation of concerns with routes for authentication, registration, and the dashboard:
+
+Welcome Page: /welcome
+The entry point for the application, accessible by anyone.
+
+Registration Flow:
+
+Individual Registration:
+Basic Information: /register/individual/basic-information
+Login Details: /register/individual/login-details
+OTP Verification: /register/individual/otp-verification
+Corporate Registration:
+Company Information: /register/corporate/company-information
+Registration Successful: /register/corporate/registration-successful
+Dashboard: /dashboard (or more specifically /dashboard/market/order-book)
+This page is protected by the useAuth hook. If an unauthorized user attempts to access it, they are redirected to /welcome. Once logged in (i.e., an access token is stored in localStorage and verified via /api/user/me), the user sees a personalized greeting and dashboard data.
+
+Key Features
+Responsive Sidebar & Mobile Navigation
+Sidebar:
+Always visible on desktop/tablet (using md:static and md:translate-x-0).
+On mobile, the sidebar is toggled via a hamburger menu and slides in with an overlay.
+Logout Button: Positioned at the absolute bottom of the sidebar, ensuring it’s always at the bottom regardless of navigation items.
+Skeleton Loader
+A skeleton loader is displayed while the authentication state is loading. The loader mimics the layout of the dashboard, including the top bar, sidebar, and main content, using Tailwind CSS’s animate-pulse.
+Toast Notifications
+React Toastify is used for non-blocking notifications.
+A welcome toast is displayed only once after the user data is fetched and authentication is complete.
+Custom transitions (using the Slide effect) and theme settings ensure consistency with the application’s design.
+Authentication with Axios
+The useAuth hook uses Axios to fetch user data from the /api/user/me endpoint.
+If authentication fails or no token is found in localStorage, the user is redirected to /welcome.
+API Integration
+All API calls are centralized using an Axios instance configured via an environment variable (NEXT_PUBLIC_API_URL).
+Separate modules for login, password reset, registration, and resend code streamline API interactions.
+Chat Integration
+Tawk.to Integration:
+The Tawk.to live chat widget is integrated using Next.js’s <Script> component in the root layout, with further customization handled via the Tawk.to dashboard.
+Running the Application
+Prerequisites
+Node.js (v14+ recommended)
+npm or yarn
+Installation
+Clone the Repository:
+
+bash
+Copy
+Edit
+git clone <repository-url>
+cd my-nextjs-app
+Install Dependencies:
+
+bash
+Copy
+Edit
+npm install
+# or
+yarn install
+Configure Environment Variables:
+
+Create a .env file in the root directory and add:
+
+env
+Copy
+Edit
+NEXT_PUBLIC_API_URL=https://comx-backend.onrender.com/api
+Run the Development Server:
+
+bash
+Copy
+Edit
+npm run dev
+# or
+yarn dev
+Deployment
+Build and deploy your application using your preferred hosting service (e.g., Vercel, Netlify):
+
+bash
+Copy
+Edit
+npm run build
+npm run start
+Conclusion
+The ComX application demonstrates a modern frontend architecture built with Next.js, TypeScript, and Tailwind CSS. With its robust API integration, custom hooks for authentication and form validation, responsive design, and live chat support, the project is designed for both performance and scalability. I look forward to discussing this further and am excited about the opportunity to contribute to your team.
+

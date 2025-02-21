@@ -15,3 +15,11 @@ input[type="date"]::-moz-calendar-picker-indicator {
   filter: invert(69%) sepia(24%) saturate(151%) hue-rotate(164deg)
     brightness(92%) contrast(90%);
 }
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}

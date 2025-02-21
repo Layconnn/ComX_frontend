@@ -50,7 +50,7 @@ const SignInPage = () => {
       const response = await login(dto);
       console.log("Login successful:", response);
       localStorage.setItem("access_token", response.access_token);
-      router.push("/dashboard/market/order-book");
+      router.push("/dashboard");
     } catch (error: any) {
       console.error(error);
       setGlobalError(
