@@ -12,17 +12,24 @@ import ErrorMessage from "@/components/errorMessage";
 import { useCompanyFormValidation } from "@/hooks/corperate/useFormValidation";
 import { registerCorporate, CorporateSignupDto } from "@/api/auth/register";
 import SpinnerLoader from "@/components/spinnerLoader";
+import { useSelector, useDispatch } from "react-redux";
+import type { RootState } from "@/redux/store";
+import { setCorporateRegistrationStep2 } from "@/redux/slices/corporateRegistrationSlice";
 
 export default function CorporateLoginDetails() {
   const router = useRouter();
+  const dispatch = useDispatch();
   const { currentStep, setCurrentStep } = useRegistration();
-
   const [password, setPassword] = useState<string>("");
   const [confirmPassword, setConfirmPassword] = useState<string>("");
   const [emailValue, setEmailValue] = useState<string>("");
   const [error, setError] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(false);
   const { errors, validateFields, clearError } = useCompanyFormValidation();
+
+  const corporateStep1 = useSelector(
+    (state: RootState) => state.corporateRegistration.corporateStep1
+  );
 
   useEffect(() => {
     setCurrentStep(2);
@@ -49,25 +56,20 @@ export default function CorporateLoginDetails() {
 
     setError("");
 
-    const step1DataString = localStorage.getItem("corporateRegistrationStep1");
-    if (!step1DataString) {
+    if (!corporateStep1) {
       setError("Basic company info missing. Please restart registration.");
       return;
     }
-    const step1Data = JSON.parse(step1DataString);
 
     const dto: CorporateSignupDto = {
-      companyName: step1Data.companyName,
-      businessType: step1Data.businessType,
-      dateOfIncorporation: step1Data.dateOfIncorporation,
+      companyName: corporateStep1.companyName,
+      businessType: corporateStep1.businessType,
+      dateOfIncorporation: corporateStep1.dateOfIncorporation,
       companyEmail: emailValue,
       password: password,
     };
 
-    localStorage.setItem(
-      "corporateRegistrationStep2",
-      JSON.stringify({ companyEmail: emailValue })
-    );
+    dispatch(setCorporateRegistrationStep2({ companyEmail: emailValue }));
 
     setLoading(true);
     try {
@@ -151,8 +153,7 @@ export default function CorporateLoginDetails() {
           <ButtonDiv
             option={loading ? <SpinnerLoader /> : "VERIFY ACCOUNT"}
             type="submit"
-            className=
-                 "outline-none bg-none flex justify-center items-center mx-auto text-[0.875rem] leading-[1.025625rem] text-[#D71E0E] font-medium cursor-pointer"
+            className="outline-none bg-none flex justify-center items-center mx-auto text-[0.875rem] leading-[1.025625rem] text-[#D71E0E] font-medium cursor-pointer"
           />
         </form>
       </FormWrapper>

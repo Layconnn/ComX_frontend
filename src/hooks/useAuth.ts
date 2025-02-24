@@ -2,6 +2,8 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import axiosInstance from "@/api/axiosInstance";
+import { useSelector } from "react-redux";
+import type { RootState } from "@/redux/store";
 
 interface User {
   firstName?: string;
@@ -9,13 +11,21 @@ interface User {
 }
 
 export function useAuth() {
+  const token = useSelector((state: RootState) => state.auth.accessToken);
+  // Access the redux-persist state
+  const persistState = useSelector((state: RootState) => state._persist);
+  
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const router = useRouter();
 
   useEffect(() => {
     async function checkAuth() {
-      const token = localStorage.getItem("access_token");
+      // Wait until redux-persist has rehydrated
+      if (!persistState?.rehydrated) {
+        return;
+      }
+
       if (!token) {
         router.push("/welcome");
         return;
@@ -36,7 +46,7 @@ export function useAuth() {
       }
     }
     checkAuth();
-  }, [router]);
+  }, [router, token, persistState]);
 
   return { user, loading };
 }

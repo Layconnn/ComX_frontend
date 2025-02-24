@@ -3,21 +3,24 @@
 "use client";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { useDispatch } from "react-redux";
 import ButtonDiv from "@/components/button";
 import FormInput from "@/components/formInput";
 import FormWrapper from "@/components/formWrapper";
 import ErrorMessage from "@/components/errorMessage";
 import { login, LoginDto } from "@/api/auth/login";
 import SpinnerLoader from "@/components/spinnerLoader";
+import { setAccessToken } from "@/redux/slices/authSlice";
 
 const SignInPage = () => {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [globalError, setGlobalError] = useState("");
-  const [emailError, setEmailError] = useState("");
-  const [passwordError, setPasswordError] = useState("");
+  const [email, setEmail] = useState<string>("");
+  const [password, setPassword] = useState<string>("");
+  const [globalError, setGlobalError] = useState<string>("");
+  const [emailError, setEmailError] = useState<string>("");
+  const [passwordError, setPasswordError] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(false);
   const router = useRouter();
+  const dispatch = useDispatch();
 
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
@@ -50,7 +53,7 @@ const SignInPage = () => {
     try {
       const response = await login(dto);
       console.log("Login successful:", response);
-      localStorage.setItem("access_token", response.access_token);
+      dispatch(setAccessToken(response.access_token))
       router.push("/dashboard");
     } catch (error: any) {
       console.error(error);

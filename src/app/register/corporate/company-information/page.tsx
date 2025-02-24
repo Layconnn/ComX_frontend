@@ -2,6 +2,8 @@
 "use client";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import { useDispatch } from "react-redux";
+import { setCorporateRegistrationStep1 } from "@/redux/slices/corporateRegistrationSlice";
 import { useRegistration } from "@/contexts/registrationContext";
 import StepProgress from "@/components/stepProgress";
 import FormWrapper from "@/components/formWrapper";
@@ -13,13 +15,14 @@ import SpinnerLoader from "@/components/spinnerLoader";
 
 export default function CompanyRegistration() {
   const router = useRouter();
+  const dispatch = useDispatch();
   const { currentStep, setCurrentStep } = useRegistration();
   const [accountType, setAccountType] = useState<"individual" | "corporate">(
     "corporate"
   );
   const [companyName, setCompanyName] = useState<string>("");
   const [businessType, setBusinessType] = useState<string>("");
-  const [dateOfIncorporation, setDateOfIncorporation] = useState("");
+  const [dateOfIncorporation, setDateOfIncorporation] = useState<string>("");
   const [globalError, setGlobalError] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(false);
   const { errors, validateFields, clearError } = useCompanyFormValidation();
@@ -53,14 +56,8 @@ export default function CompanyRegistration() {
     setGlobalError("");
     console.log("Form submitted:", fields);
 
-    localStorage.setItem(
-      "corporateRegistrationStep1",
-      JSON.stringify({
-        companyName,
-        businessType,
-        dateOfIncorporation,
-      })
-    );
+     
+  dispatch(setCorporateRegistrationStep1(fields));
 
     setLoading(true);
     setTimeout(() => {
@@ -89,7 +86,7 @@ export default function CompanyRegistration() {
         title="Register new account"
         subtitle="Sign up for an account and start trading today"
       >
-        <p className="text-[#1E1E1E] text-[0.875rem] leading-[1.025625rem] mb-[0.875rem]">
+        <p className="text-[#1E1E1E] text-[0.875rem] leading-[1.025625rem] mb-[0.875rem] max-[400px]:text-[0.75rem]">
           Select the category that best describes you
         </p>
         <div className="flex gap-[0.635rem] mb-[1.25rem]">
@@ -99,7 +96,7 @@ export default function CompanyRegistration() {
             className={`flex-1 py-[1.125rem] pl-[2.6875rem] pr-[2.625rem] text-center border transition-colors max-w-[9.125rem] ${
               accountType === "individual"
                 ? "bg-black text-white border-black"
-                : "bg-white text-black border-gray-300"
+                : "bg-white text-black border-gray-300 hover:bg-black hover:text-white hover:border-black"
             }`}
           />
           <ButtonDiv
@@ -108,7 +105,7 @@ export default function CompanyRegistration() {
             className={`flex-1 pl-[2.65625rem] pr-[2.59375rem] pt-4 pb-[0.9375rem] text-center border transition-colors max-w-[9.125rem] ${
               accountType === "corporate"
                 ? "bg-black text-white border-black"
-                : "bg-white text-black border-gray-300"
+                : "bg-white text-black border-gray-300 hover:bg-black hover:text-white hover:border-black"
             }`}
           />
         </div>

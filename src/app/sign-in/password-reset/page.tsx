@@ -7,17 +7,20 @@ import FormInput from "@/components/formInput";
 import ErrorMessage from "@/components/errorMessage";
 import ButtonDiv from "@/components/button";
 import { useRouter } from "next/navigation";
+import { useDispatch } from "react-redux";
 import {
   requestPasswordReset,
   RequestResetPasswordDto,
 } from "@/api/auth/password-reset";
 import SpinnerLoader from "@/components/spinnerLoader";
+import { setResetEmail } from "@/redux/slices/resetPasswordSlice";
 
 const PasswordResetPage = () => {
-  const [email, setEmail] = useState("");
-  const [error, setError] = useState("");
+  const [email, setEmail] = useState<string>("");
+  const [error, setError] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(false);
   const router = useRouter();
+  const dispatch = useDispatch();
 
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
@@ -27,7 +30,7 @@ const PasswordResetPage = () => {
     }
     setError("");
 
-    localStorage.setItem("resetEmail", email);
+    dispatch(setResetEmail(email))
 
     setLoading(true);
 

@@ -3,6 +3,9 @@
 "use client";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import { useSelector, useDispatch } from "react-redux";
+import type { RootState } from "@/redux/store";
+import { setAccessToken } from "@/redux/slices/authSlice";
 import { useRegistration } from "@/contexts/registrationContext";
 import StepProgress from "@/components/stepProgress";
 import FormWrapper from "@/components/formWrapper";
@@ -15,6 +18,7 @@ import SpinnerLoader from "@/components/spinnerLoader";
 
 export default function IndividualOtpVerification() {
   const router = useRouter();
+  const dispatch = useDispatch();
   const { currentStep, setCurrentStep } = useRegistration();
   const [otp, setOtp] = useState<string>("");
   const [otpError, setOtpError] = useState<string>("");
@@ -23,14 +27,20 @@ export default function IndividualOtpVerification() {
   const [verifyLoading, setVerifyLoading] = useState<boolean>(false);
   const [email, setEmail] = useState<string>("");
 
+  const individualStep2 = useSelector(
+    (state: RootState) => state.individualRegistration.individualStep2
+  );
+
+  const emailFromRedux = individualStep2?.email || "";
+
   useEffect(() => {
-    const step1DataString = localStorage.getItem("registrationStep1");
-    if (step1DataString) {
-      const step1Data = JSON.parse(step1DataString);
-      setEmail(step1Data.email);
+    if(emailFromRedux) {
+      setEmail(emailFromRedux);
+    } else{
+      setOtpError("Registration data missing. Please restart registration.");
     }
     setCurrentStep(3);
-  }, [setCurrentStep]);
+  }, [emailFromRedux, setCurrentStep]);
 
   const handleBack = () => {
     setCurrentStep(currentStep - 1);
@@ -46,15 +56,13 @@ export default function IndividualOtpVerification() {
     }
     setOtpError("");
 
-    const step1DataString = localStorage.getItem("registrationStep1");
-    if (!step1DataString) {
-      setOtpError("Registration data missing. Please start over.");
+    if(!emailFromRedux) {
+      setOtpError("Registration data missing. Please restart registration.");
       return;
     }
-    const step1Data = JSON.parse(step1DataString);
-    const email = step1Data.email;
+    const email = emailFromRedux;
     if (!email) {
-      setOtpError("Email missing. Please start over.");
+      setOtpError("Email missing. Please restart registration.");
       return;
     }
 
@@ -62,7 +70,7 @@ export default function IndividualOtpVerification() {
     setVerifyLoading(true);
     try {
       const response = await verifyOtp(dto);
-      localStorage.setItem("access_token", response.access_token);
+      dispatch(setAccessToken(response.access_token));
       setCurrentStep(currentStep + 1);
       router.push("/register/individual/registration-successful");
     } catch (error: any) {
@@ -77,13 +85,11 @@ export default function IndividualOtpVerification() {
   };
 
   const handleResendCode = async () => {
-    const step1DataString = localStorage.getItem("registrationStep1");
-    if (!step1DataString) {
+    if(!emailFromRedux){
       setResendMessage("No email found. Please restart registration.");
       return;
     }
-    const step1Data = JSON.parse(step1DataString);
-    const email = step1Data.email;
+    const email = emailFromRedux;
     if (!email) {
       setResendMessage("No email found. Please restart registration.");
       return;
@@ -148,7 +154,7 @@ export default function IndividualOtpVerification() {
               onClick={handleResendCode}
             >
               {resendLoading ? (
-                <SpinnerLoader className="border-[#98A9BCCC]" />
+                <SpinnerLoader className="border-gray-400 w-2 h-2" />
               ) : (
                 "Resend Code"
               )}

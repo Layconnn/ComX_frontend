@@ -12,11 +12,14 @@ import ErrorMessage from "@/components/errorMessage";
 import { verifyOtp, VerifyOtpDto } from "@/api/auth/verify-otp";
 import { resendSignUpOtpCode } from "@/api/auth/resendCode";
 import SpinnerLoader from "@/components/spinnerLoader";
+import { useSelector, useDispatch } from "react-redux";
+import type { RootState } from "@/redux/store";
+import { setAccessToken } from "@/redux/slices/authSlice";
 
 export default function CorporateOtpVerification() {
   const router = useRouter();
+  const dispatch = useDispatch();
   const { currentStep, setCurrentStep } = useRegistration();
-
   const [otp, setOtp] = useState<string>("");
   const [otpError, setOtpError] = useState<string>("");
   const [resendMessage, setResendMessage] = useState<string>("");
@@ -24,14 +27,21 @@ export default function CorporateOtpVerification() {
   const [verifyLoading, setVerifyLoading] = useState<boolean>(false);
   const [companyEmail, setCompanyEmail] = useState<string>("");
 
+  const corporateStep2 = useSelector(
+    (state: RootState) => state.corporateRegistration.corporateStep2
+  );
+  const emailFromRedux = corporateStep2?.companyEmail || "";
+
   useEffect(() => {
-    const step2DataString = localStorage.getItem("corporateRegistrationStep2");
-    if (step2DataString) {
-      const step2Data = JSON.parse(step2DataString);
-      setCompanyEmail(step2Data.companyEmail);
+    // If Redux state for step2 exists, use that.
+    if (emailFromRedux) {
+      setCompanyEmail(emailFromRedux);
+    } else {
+      // If missing, you might want to redirect or show an error.
+      setOtpError("Registration data missing. Please restart registration.");
     }
     setCurrentStep(3);
-  }, [setCurrentStep]);
+  }, [emailFromRedux, setCurrentStep]);
 
   const handleBack = () => {
     setCurrentStep(currentStep - 1);
@@ -40,29 +50,27 @@ export default function CorporateOtpVerification() {
 
   const handleFinish = async (e: React.FormEvent) => {
     e.preventDefault();
-
+  
     if (!otp) {
       setOtpError("OTP is required.");
       return;
     }
-
-    const step2DataString = localStorage.getItem("corporateRegistrationStep2");
-    if (!step2DataString) {
+  
+    if (!emailFromRedux) {
       setOtpError("Registration data missing. Please restart registration.");
       return;
     }
-    const step2Data = JSON.parse(step2DataString);
-    const email = step2Data.companyEmail || step2Data.email;
+    const email = emailFromRedux;
     if (!email) {
       setOtpError("Email missing. Please restart registration.");
       return;
     }
-
+  
     const dto: VerifyOtpDto = { email, otp };
     setVerifyLoading(true);
     try {
       const response = await verifyOtp(dto);
-      localStorage.setItem("access_token", response.access_token);
+      dispatch(setAccessToken(response.access_token));
       setCurrentStep(currentStep + 1);
       router.push("/register/corporate/registration-successful");
     } catch (error: any) {
@@ -77,17 +85,11 @@ export default function CorporateOtpVerification() {
   };
 
   const handleResendCode = async () => {
-    const step2DataString = localStorage.getItem("corporateRegistrationStep2");
-    if (!step2DataString) {
+    if (!emailFromRedux) {
       setResendMessage("No email found. Please restart registration.");
       return;
     }
-    const step2Data = JSON.parse(step2DataString);
-    if (!step2Data) {
-      setResendMessage("No email found. Please restart registration.");
-      return;
-    }
-    const email = step2Data.companyEmail || step2Data.email;
+    const email = emailFromRedux;
     if (!email) {
       setResendMessage("No email found. Please restart registration.");
       return;
@@ -139,11 +141,7 @@ export default function CorporateOtpVerification() {
               className="text-center text-[#98A9BCCC] text-[0.75rem] leading-[1.3125rem] mb-[3.125rem] cursor-pointer"
               onClick={handleResendCode}
             >
-              {resendLoading ? (
-                <SpinnerLoader />
-              ) : (
-                "Resend Code"
-              )}
+              {resendLoading ? <SpinnerLoader className="border-gray-400 w-2 h-2" /> : "Resend Code"}
             </h5>
           </div>
 
@@ -165,8 +163,7 @@ export default function CorporateOtpVerification() {
             <ButtonDiv
               type="submit"
               option={verifyLoading ? <SpinnerLoader /> : "FINISH"}
-              className=
-                  "text-[#D71E0E] hover:text-[#74322c] font-medium text-[0.875rem] leading-[1.025625rem]"
+              className="text-[#D71E0E] hover:text-[#74322c] font-medium text-[0.875rem] leading-[1.025625rem]"
             />
           </div>
         </form>

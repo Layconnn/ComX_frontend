@@ -1,33 +1,33 @@
 /* eslint-disable @next/next/no-img-element */
 "use client";
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import { useSelector } from "react-redux";
+import type { RootState } from "@/redux/store";
 import { useRegistration } from "@/contexts/registrationContext";
 import StepProgress from "@/components/stepProgress";
 import FormWrapper from "@/components/formWrapper";
 import ButtonDiv from "@/components/button";
 import { Slide, ToastContainer, toast } from "react-toastify";
 import SpinnerLoader from "@/components/spinnerLoader";
-import { useRouter } from "next/navigation";
 
 export default function CorporateRegistrationSuccessful() {
-  const { currentStep, setCurrentStep } = useRegistration();
-  const [companyName, setCompanyName] = useState<string>("");
-  const [loading, setLoading] = useState<boolean>(false);
   const router = useRouter();
+  const { currentStep, setCurrentStep } = useRegistration();
+
+  const accessToken = useSelector((state: RootState) => state.auth.accessToken);
+  const corporateStep1 = useSelector(
+    (state: RootState) => state.corporateRegistration.corporateStep1
+  );
+  const companyName = corporateStep1?.companyName || "";
+
+  const [loading, setLoading] = useState<boolean>(false);
 
   useEffect(() => {
-    const accessToken = localStorage.getItem("access_token");
     if (!accessToken) {
       router.push("/register/corporate/company-information");
-      return; 
+      return;
     }
-
-    const step1DataString = localStorage.getItem("registrationStep1");
-    if (step1DataString) {
-      const step1Data = JSON.parse(step1DataString);
-      setCompanyName(step1Data.firstName);
-    }
-
     toast.success("Registration Successful!", {
       position: "top-right",
       autoClose: 2000,
@@ -39,10 +39,8 @@ export default function CorporateRegistrationSuccessful() {
       theme: "light",
       transition: Slide,
     });
-
     setCurrentStep(4);
-  }, [setCurrentStep, router]);
-
+  }, [accessToken, setCurrentStep, router]);
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-gray-100 p-4">
@@ -52,11 +50,11 @@ export default function CorporateRegistrationSuccessful() {
       <FormWrapper
         title="Registration Complete"
         subtitle={`Dear ${companyName}. Your registration is now complete.
-You  may proceed to your dashboard and start trading commodities.`}
+You may proceed to your dashboard and start trading commodities.`}
         success={true}
       >
         <ButtonDiv
-          option={loading ? <SpinnerLoader/> : "GO TO DASHBOARD"}
+          option={loading ? <SpinnerLoader /> : "GO TO DASHBOARD"}
           onClick={() => {
             setLoading(true);
             setTimeout(() => {
@@ -65,7 +63,7 @@ You  may proceed to your dashboard and start trading commodities.`}
               setLoading(false);
             }, 1000);
           }}
-          className='text-[#D71E0E] hover:text-[#ba473d] font-medium text-[0.75rem] leading-[1.025625rem] text-center cursor-pointer mx-auto'
+          className="text-[#D71E0E] hover:text-[#ba473d] font-medium text-[0.75rem] leading-[1.025625rem] text-center cursor-pointer mx-auto"
         />
       </FormWrapper>
       <StepProgress currentStep={currentStep} totalSteps={4} />

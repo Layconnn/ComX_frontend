@@ -2,6 +2,8 @@
 "use client";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import { useDispatch } from "react-redux";
+import { setIndividualRegistrationStep1 } from "@/redux/slices/individualRegistrationSlice";
 import { useRegistration } from "@/contexts/registrationContext";
 import StepProgress from "@/components/stepProgress";
 import FormWrapper from "@/components/formWrapper";
@@ -13,15 +15,16 @@ import SpinnerLoader from "@/components/spinnerLoader";
 
 export default function BasicInformation() {
   const router = useRouter();
+  const dispatch = useDispatch();
   const { setCurrentStep, currentStep } = useRegistration();
   const [accountType, setAccountType] = useState<"individual" | "corporate">(
     "individual"
   );
   const [error, setError] = useState<string>("");
-  const [firstName, setFirstName] = useState("");
-  const [lastName, setLastName] = useState("");
-  const [emailValue, setEmailValue] = useState("");
-  const [loading, setLoading] = useState(false);
+  const [firstName, setFirstName] = useState<string>("");
+  const [lastName, setLastName] = useState<string>("");
+  const [emailValue, setEmailValue] = useState<string>("");
+  const [loading, setLoading] = useState<boolean>(false);
   const { errors, validateFields, clearError } = useFormValidation();
 
   useEffect(() => {
@@ -53,8 +56,7 @@ export default function BasicInformation() {
 
     setError("");
 
-    const step1Data = { firstName, lastName, email: emailValue };
-    localStorage.setItem("registrationStep1", JSON.stringify(step1Data));
+    dispatch(setIndividualRegistrationStep1(fields));
 
     setLoading(true);
     setTimeout(() => {
@@ -90,19 +92,19 @@ export default function BasicInformation() {
           <ButtonDiv
             option="Individual"
             onClick={() => handleAccountTypeChange("individual")}
-            className={`flex-1 py-[1.125rem] pl-[2.6875rem] pr-[2.625rem] text-center border transition-colors max-w-[9.125rem] max-[400px]:p-4 hover:bg-violet-700  ${
+            className={`flex-1 py-[1.125rem] pl-[2.6875rem] pr-[2.625rem] text-center border transition-colors max-w-[9.125rem] max-[400px]:p-4 ${
               accountType === "individual"
-                ? "bg-black text-white border-black hover:bg-[#ba473d]"
-                : "bg-white text-black border-gray-300 hover:bg-gray-100"
+                ? "bg-black text-white border-black"
+                : "bg-white text-black border-gray-300 hover:bg-black hover:text-white hover:border-black"
             }`}
           />
           <ButtonDiv
             option="Corporate"
             onClick={() => handleAccountTypeChange("corporate")}
-            className={`flex-1 pl-[2.65625rem] pr-[2.59375rem] pt-4 pb-[0.9375rem] text-center border transition-colors max-w-[9.125rem] max-[400px]:p-4 hover:bg-indigo-700 ${
+            className={`flex-1 pl-[2.65625rem] pr-[2.59375rem] pt-4 pb-[0.9375rem] text-center border transition-colors max-w-[9.125rem] max-[400px]:p-4 hover:bg-white${
               accountType === "corporate"
-                ? "bg-black text-white border-black hover:bg-[#ba473d]"
-                : "bg-white text-black border-gray-300 hover:bg-gray-100"
+                ? "bg-black text-white border-black"
+                : "bg-white text-black border-gray-300 hover:bg-black hover:text-white hover:border-black"
             }`}
           />
         </div>

@@ -7,14 +7,12 @@ import FormWrapper from "@/components/formWrapper";
 import FormInput from "@/components/formInput";
 import ButtonDiv from "@/components/button";
 import ErrorMessage from "@/components/errorMessage";
-import {
-  verifyResetOtp,
-  VerifyResetOtpDto,
-  VerifyResetOtpResponse,
-} from "@/api/auth/verify-otp";
+import { verifyResetOtp, VerifyResetOtpDto, VerifyResetOtpResponse } from "@/api/auth/verify-otp";
 import { resetPassword, ResetPasswordDto } from "@/api/auth/password-reset";
 import { resendPasswordResetCode } from "@/api/auth/resendCode";
 import SpinnerLoader from "@/components/spinnerLoader";
+import { useSelector } from "react-redux";
+import type { RootState } from "@/redux/store";
 
 const PasswordResetOtpValidationPage = () => {
   const router = useRouter();
@@ -29,6 +27,8 @@ const PasswordResetOtpValidationPage = () => {
   const [resendLoading, setResendLoading] = useState<boolean>(false);
   const [otpVerified, setOtpVerified] = useState<boolean>(false);
 
+  const resetEmail = useSelector((state: RootState) => state.resetPassword.resetEmail);
+
   const handleVerifyOtp = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -38,16 +38,11 @@ const PasswordResetOtpValidationPage = () => {
     }
     setOtpError("");
 
-    const storedEmail = localStorage.getItem("resetEmail");
-    if (!storedEmail) {
-      setOtpError(
-        "Email data missing. Please restart the password reset process."
-      );
+    if (!resetEmail) {
+      setOtpError("Email data missing. Please restart the password reset process.");
       return;
     }
-    const email = storedEmail;
-
-    const dto: VerifyResetOtpDto = { email, otp };
+    const dto: VerifyResetOtpDto = { email: resetEmail, otp };
 
     setLoading(true);
     try {
@@ -80,29 +75,25 @@ const PasswordResetOtpValidationPage = () => {
     }
     setPasswordError("");
 
-    const storedEmail = localStorage.getItem("resetEmail");
-    if (!storedEmail) {
-      setGlobalError(
-        "Email data missing. Please restart the password reset process."
-      );
+    if (!resetEmail) {
+      setGlobalError("Email data missing. Please restart the password reset process.");
       return;
     }
-    const email = storedEmail;
 
-    const dto: ResetPasswordDto = { email, token: otp, newPassword };
+    const dto: ResetPasswordDto = { email: resetEmail, token: otp, newPassword };
 
     setLoading(true);
     try {
       const response = await resetPassword(dto);
       console.log("Password reset successfully:", response);
-      localStorage.removeItem("resetEmail");
-      localStorage.setItem("access_token", response.access_token);
+      // Optionally clear the reset email from Redux if done
+      // dispatch(clearResetEmail());
       router.push("/sign-in");
     } catch (error: any) {
       console.error(error);
       setPasswordError(
         error.response?.data?.message ||
-          "Password reset failed. Please try again."
+        "Password reset failed. Please try again."
       );
     } finally {
       setLoading(false);
@@ -110,18 +101,14 @@ const PasswordResetOtpValidationPage = () => {
   };
 
   const handleResendCode = async () => {
-    const storedEmail = localStorage.getItem("resetEmail");
-    if (!storedEmail) {
-      setResendMessage(
-        "No email found. Please restart the password reset process."
-      );
+    if (!resetEmail) {
+      setResendMessage("No email found. Please restart the password reset process.");
       return;
     }
-    const email = storedEmail;
     try {
       setResendLoading(true);
       setResendMessage("");
-      const response = await resendPasswordResetCode(email);
+      const response = await resendPasswordResetCode(resetEmail);
       setResendMessage(response.message);
     } catch (error: any) {
       console.error(error);
@@ -187,7 +174,7 @@ const PasswordResetOtpValidationPage = () => {
                 onClick={handleResendCode}
               >
                 {resendLoading ? (
-                  <SpinnerLoader className="border-[#98A9BCCC]" />
+                  <SpinnerLoader className="border-gray-400 w-2 h-2" />
                 ) : (
                   "Resend Code"
                 )}
@@ -198,7 +185,7 @@ const PasswordResetOtpValidationPage = () => {
               <ErrorMessage
                 message={otpError}
                 isNotification
-                onClose={() => setPasswordError("")}
+                onClose={() => setOtpError("")}
                 className="w-full mb-[5.375rem]"
               />
             )}
@@ -261,13 +248,7 @@ const PasswordResetOtpValidationPage = () => {
               />
               <ButtonDiv
                 type="submit"
-                option={
-                  loading ? (
-                    <SpinnerLoader />
-                  ) : (
-                    "RESET PASSWORD"
-                  )
-                }
+                option={loading ? <SpinnerLoader /> : "RESET PASSWORD"}
                 className="text-[#D71E0E] hover:text-[#74322c] font-medium text-[0.875rem] leading-[1.025625rem]"
               />
             </div>

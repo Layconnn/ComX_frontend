@@ -6,7 +6,6 @@ import { Slide, ToastContainer, toast } from "react-toastify";
 import Sidebar from "@/components/dashboard/sidebar";
 import TableHeader from "@/components/dashboard/tableHeader";
 import TableRows from "@/components/dashboard/tableRows";
-// import SkeletonLoader from "@/components/dashboard/skeletonLoader";
 import { FadeLoader } from "react-spinners";
 import "react-toastify/dist/ReactToastify.css";
 import { useAuth } from "@/hooks/useAuth";

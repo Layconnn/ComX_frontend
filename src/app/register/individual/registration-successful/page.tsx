@@ -6,6 +6,8 @@ import StepProgress from "@/components/stepProgress";
 import FormWrapper from "@/components/formWrapper";
 import ButtonDiv from "@/components/button";
 import { useRouter } from "next/navigation";
+import { useSelector } from "react-redux";
+import type { RootState } from "@/redux/store";
 import { Slide, ToastContainer, toast } from "react-toastify";
 import SpinnerLoader from "@/components/spinnerLoader";
 
@@ -15,17 +17,17 @@ export default function CorporateRegistrationSuccessful() {
   const [loading, setLoading] = useState<boolean>(false);
   const router = useRouter();
 
+  const accessToken =  useSelector((state: RootState) => state.auth.accessToken);
+  const individualStep1 = useSelector((state: RootState) => state.individualRegistration.individualStep1);
+  
+
   useEffect(() => {
-    const accessToken = localStorage.getItem("access_token");
     if (!accessToken) {
-      router.push("/register/individual/basic-information");
+      router.push("register/individual/basic-information");
       return;
     }
-
-    const step1DataString = localStorage.getItem("registrationStep1");
-    if (step1DataString) {
-      const step1Data = JSON.parse(step1DataString);
-      setFirstName(step1Data.firstName);
+    if (individualStep1) {
+      setFirstName(individualStep1?.firstName || '')
     }
 
     toast.success("Registration Successful!", {
@@ -42,7 +44,7 @@ export default function CorporateRegistrationSuccessful() {
 
     // 4. Update current step
     setCurrentStep(4);
-  }, [setCurrentStep, router]);
+  }, [accessToken, individualStep1, setCurrentStep, router]);
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-gray-100 p-4">

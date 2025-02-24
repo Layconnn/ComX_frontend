@@ -3,6 +3,9 @@
 "use client";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import { useSelector, useDispatch } from "react-redux";
+import { RootState } from "@/redux/store";
+import { setIndividualRegistrationStep2 } from "@/redux/slices/individualRegistrationSlice";
 import { useRegistration } from "@/contexts/registrationContext";
 import StepProgress from "@/components/stepProgress";
 import FormWrapper from "@/components/formWrapper";
@@ -16,15 +19,18 @@ import SpinnerLoader from "@/components/spinnerLoader";
 
 export default function IndividualLoginDetails() {
   const router = useRouter();
+  const dispatch = useDispatch();
   const { currentStep, setCurrentStep } = useRegistration();
-
   const [password, setPassword] = useState<string>("");
   const [confirmPassword, setConfirmPassword] = useState<string>("");
   const [phone, setPhone] = useState<string>("");
   const [error, setError] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(false);
-
   const { errors, validateFields, clearError } = useFormValidation();
+
+  const individualStep1 = useSelector(
+    (state: RootState) => state.individualRegistration.individualStep1
+  );
 
   useEffect(() => {
     setCurrentStep(2);
@@ -46,20 +52,20 @@ export default function IndividualLoginDetails() {
     }
     setError("");
 
-    const step1DataString = localStorage.getItem("registrationStep1");
-    if (!step1DataString) {
-      setError("Registration data missing. Please start over.");
+    if(!individualStep1) {
+      setError("Basic information missing. Please restart registration.");
       return;
     }
-    const step1Data = JSON.parse(step1DataString);
 
     const dto: IndividualSignupDto = {
-      firstName: step1Data.firstName,
-      lastName: step1Data.lastName,
-      email: step1Data.email,
+      firstName: individualStep1.firstName,
+      lastName: individualStep1.lastName,
+      email: individualStep1.email,
       phone: phone,
       password: password,
     };
+
+    dispatch(setIndividualRegistrationStep2({email: individualStep1.email}));
 
     setLoading(true);
     try {
