@@ -18,7 +18,7 @@ export default function Dashboard() {
 
   const router = useRouter();
 
-  const userName = user?.companyName || user?.firstName;
+  const userName = user?.companyName ? user.companyName : user?.firstName;
 
   useEffect(() => {
     toast.success(`Welcome, ${userName}!`, {
