@@ -27,10 +27,11 @@ export default function CorporateOtpVerification() {
   const [verifyLoading, setVerifyLoading] = useState<boolean>(false);
   const [companyEmail, setCompanyEmail] = useState<string>("");
 
+  const googleEmail = useSelector((state: RootState) => state.auth.googleEmail);
   const corporateStep2 = useSelector(
     (state: RootState) => state.corporateRegistration.corporateStep2
   );
-  const emailFromRedux = corporateStep2?.companyEmail || "";
+  const emailFromRedux = googleEmail || corporateStep2?.companyEmail || "";
 
   useEffect(() => {
     // If Redux state for step2 exists, use that.
@@ -55,24 +56,33 @@ export default function CorporateOtpVerification() {
       setOtpError("OTP is required.");
       return;
     }
+    setOtpError("");
   
     if (!emailFromRedux) {
       setOtpError("Registration data missing. Please restart registration.");
       return;
     }
-    const email = emailFromRedux;
-    if (!email) {
-      setOtpError("Email missing. Please restart registration.");
+  
+    const emailToUse = emailFromRedux;
+    if (!emailToUse) {
+      setOtpError("Registration data missing. Please restart registration.");
       return;
     }
   
-    const dto: VerifyOtpDto = { email, otp };
+    const dto: VerifyOtpDto = { email: emailToUse, otp };
     setVerifyLoading(true);
     try {
       const response = await verifyOtp(dto);
       dispatch(setAccessToken(response.access_token));
       setCurrentStep(currentStep + 1);
-      router.push("/register/corporate/registration-successful");
+  
+      // If the email from Redux matches the google email stored in Redux,
+      // then route to sign-in; otherwise, route to the registration-successful page.
+      if (emailFromRedux === googleEmail) {
+        router.push("/sign-in");
+      } else {
+        router.push("/register/individual/registration-successful");
+      }
     } catch (error: any) {
       console.error(error);
       setOtpError(
@@ -83,6 +93,7 @@ export default function CorporateOtpVerification() {
       setVerifyLoading(false);
     }
   };
+  
 
   const handleResendCode = async () => {
     if (!emailFromRedux) {
@@ -141,7 +152,11 @@ export default function CorporateOtpVerification() {
               className="text-center text-[#98A9BCCC] text-[0.75rem] leading-[1.3125rem] mb-[3.125rem] cursor-pointer"
               onClick={handleResendCode}
             >
-              {resendLoading ? <SpinnerLoader className="border-gray-400 w-2 h-2" /> : "Resend Code"}
+              {resendLoading ? (
+                <SpinnerLoader className="border-gray-400 w-2 h-2" />
+              ) : (
+                "Resend Code"
+              )}
             </h5>
           </div>
 

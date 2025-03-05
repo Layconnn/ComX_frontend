@@ -10,9 +10,9 @@ interface FormErrors {
 }
 
 export const useCompanyFormValidation = () => {
-  const [errors, setErrors] = useState<FormErrors>({});
+  const [corporateErrors, setCorporateErrors] = useState<FormErrors>({});
 
-  const validateFields = (fields: { [key: string]: string }) => {
+  const validateCorporateFields = (fields: { [key: string]: string }) => {
     const newErrors: FormErrors = {};
 
     // Company Name Validation (optional - only validate if provided)
@@ -78,21 +78,21 @@ export const useCompanyFormValidation = () => {
       }
     }
 
-    setErrors(newErrors);
+    setCorporateErrors(newErrors);
     // Returns true if no errors
     return Object.keys(newErrors).length === 0;
   };
 
-  const clearError = (field: keyof FormErrors) => {
-    setErrors((prevErrors) => ({
+  const clearCorporateError = (field: keyof FormErrors) => {
+    setCorporateErrors((prevErrors) => ({
       ...prevErrors,
       [field]: undefined,
     }));
   };
 
   return {
-    errors,
-    validateFields,
-    clearError,
+    corporateErrors,
+    validateCorporateFields,
+    clearCorporateError,
   };
 };

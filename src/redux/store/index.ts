@@ -2,9 +2,10 @@ import { configureStore, combineReducers } from '@reduxjs/toolkit';
 import { persistReducer, persistStore } from 'redux-persist';
 import storage from 'redux-persist/lib/storage';
 import authReducer from '../slices/authSlice';
+import registrationReducer from '../slices/registrationSlice';
 import corporateRegistrationReducer from '../slices/corporateRegistrationSlice';
 import individualRegistrationReducer from '../slices/individualRegistrationSlice';
-import resetPasswordReducer from '../slices/resetPasswordSlice'; // Import the new slice
+import resetPasswordReducer from '../slices/resetPasswordSlice';
 import {
   FLUSH,
   REHYDRATE,
@@ -17,11 +18,12 @@ import {
 const persistConfig = {
   key: 'root',
   storage,
-  whitelist: [  'auth',  'individualRegistration', 'corporateRegistration', 'resetPassword'],
+  whitelist: ['auth', 'registration', 'individualRegistration', 'corporateRegistration', 'resetPassword'],
 };
 
 const rootReducer = combineReducers({
   auth: authReducer,
+  registration: registrationReducer,
   corporateRegistration: corporateRegistrationReducer,
   individualRegistration: individualRegistrationReducer,
   resetPassword: resetPasswordReducer,

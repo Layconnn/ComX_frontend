@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useDispatch } from "react-redux";
 import { setIndividualRegistrationStep1 } from "@/redux/slices/individualRegistrationSlice";
+import { setAccountType } from "@/redux/slices/registrationSlice";
 import { useRegistration } from "@/contexts/registrationContext";
 import StepProgress from "@/components/stepProgress";
 import FormWrapper from "@/components/formWrapper";
@@ -17,9 +18,6 @@ export default function BasicInformation() {
   const router = useRouter();
   const dispatch = useDispatch();
   const { setCurrentStep, currentStep } = useRegistration();
-  const [accountType, setAccountType] = useState<"individual" | "corporate">(
-    "individual"
-  );
   const [error, setError] = useState<string>("");
   const [firstName, setFirstName] = useState<string>("");
   const [lastName, setLastName] = useState<string>("");
@@ -34,30 +32,20 @@ export default function BasicInformation() {
   const handleAccountTypeChange = (type: "individual" | "corporate") => {
     if (type === "corporate") {
       router.push("/register/corporate/company-information");
-    } else {
-      setAccountType("individual");
     }
   };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-
-    const fields = {
-      firstName,
-      lastName,
-      email: emailValue,
-    };
-
+    const fields = { firstName, lastName, email: emailValue };
     const isValid = validateFields(fields);
     if (!isValid) {
       setError("Please fill in all required fields correctly.");
       return;
     }
-
     setError("");
-
     dispatch(setIndividualRegistrationStep1(fields));
-
+    dispatch(setAccountType("individual"));
     setLoading(true);
     setTimeout(() => {
       setCurrentStep(2);
@@ -66,12 +54,18 @@ export default function BasicInformation() {
     }, 1000);
   };
 
+  const handleGoogleSignUp = () => {
+    dispatch(setAccountType("individual"));
+    const googleRedirectUrl = `${process.env.NEXT_PUBLIC_API_URL}/auth/google-redirect?accountType=individual`;
+    window.location.href = googleRedirectUrl;
+  };
+  
+
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-gray-100 p-4">
       <div className="flex justify-center items-center mt-[2.375rem] mb-[1.8125rem]">
         <img src="/logo.svg" alt="ComX" />
       </div>
-
       {error && (
         <ErrorMessage
           message={error}
@@ -80,7 +74,6 @@ export default function BasicInformation() {
           className="mb-[1.5rem] w-full"
         />
       )}
-
       <FormWrapper
         title="Register new account"
         subtitle="Sign up for an account and start trading today"
@@ -92,73 +85,76 @@ export default function BasicInformation() {
           <ButtonDiv
             option="Individual"
             onClick={() => handleAccountTypeChange("individual")}
-            className={`flex-1 py-[1.125rem] pl-[2.6875rem] pr-[2.625rem] text-center border transition-colors max-w-[9.125rem] max-[400px]:p-4 ${
-              accountType === "individual"
-                ? "bg-black text-white border-black"
-                : "bg-white text-black border-gray-300 hover:bg-black hover:text-white hover:border-black"
-            }`}
+            className={`flex-1 py-[1.125rem] pl-[2.6875rem] pr-[2.625rem] text-center border transition-colors max-w-[9.125rem] bg-black text-white border-black hover:bg-[#2c2828]`}
           />
           <ButtonDiv
             option="Corporate"
             onClick={() => handleAccountTypeChange("corporate")}
-            className={`flex-1 pl-[2.65625rem] pr-[2.59375rem] pt-4 pb-[0.9375rem] text-center border transition-colors max-w-[9.125rem] max-[400px]:p-4 hover:bg-white${
-              accountType === "corporate"
-                ? "bg-black text-white border-black"
-                : "bg-white text-black border-gray-300 hover:bg-black hover:text-white hover:border-black"
-            }`}
+            className={`flex-1 pl-[2.65625rem] pr-[2.59375rem] pt-4 pb-[0.9375rem] text-center border transition-colors max-w-[9.125rem] hover:bg-black hover:text-white hover:border-black`}
           />
         </div>
-
-        {accountType === "individual" && (
-          <form onSubmit={handleSubmit}>
-            <div className="flex gap-[1.28125rem] max-[640px]:flex-col max-[640px]:gap-0">
-              <FormInput
-                name="firstName"
-                id="firstName"
-                type="text"
-                label="Your First Name"
-                className={`w-full ${errors.firstName ? "border-red-500" : ""}`}
-                placeholder="Enter Your First Name"
-                value={firstName}
-                onChange={(e) => setFirstName(e.target.value)}
-                error={!!errors.firstName}
-                errorMessage={errors.firstName}
-                onClose={() => clearError("firstName")}
-              />
-              <FormInput
-                name="lastName"
-                id="lastName"
-                type="text"
-                label="Your Last Name"
-                className={`w-full ${errors.lastName ? "border-red-500" : ""}`}
-                placeholder="Enter your Last Name"
-                value={lastName}
-                onChange={(e) => setLastName(e.target.value)}
-                error={!!errors.lastName}
-                errorMessage={errors.lastName}
-                onClose={() => clearError("lastName")}
-              />
-            </div>
+        <form onSubmit={handleSubmit}>
+          <div className="flex gap-[1.28125rem] max-[640px]:flex-col max-[640px]:gap-0">
             <FormInput
-              name="email"
-              id="email"
-              label="Your Email"
-              className={`w-full ${errors.email ? "border-red-500" : ""}`}
-              placeholder="Enter your Email"
-              value={emailValue}
-              onChange={(e) => setEmailValue(e.target.value)}
-              error={!!errors.email}
-              errorMessage={errors.email}
-              onClose={() => clearError("email")}
+              name="firstName"
+              id="firstName"
+              type="text"
+              label="Your First Name"
+              className={`w-full ${errors.firstName ? "border-red-500" : ""}`}
+              placeholder="Enter Your First Name"
+              value={firstName}
+              onChange={(e) => setFirstName(e.target.value)}
+              error={!!errors.firstName}
+              errorMessage={errors.firstName}
+              onClose={() => clearError("firstName")}
             />
-            <ButtonDiv
-              type="submit"
-              option={loading ? <SpinnerLoader/> : "NEXT STEP"}
-              className="outline-none bg-none mt-[1.3125rem] flex justify-center items-center mx-auto text-[0.875rem] leading-[1.025625rem] text-[#D71E0E] font-medium cursor-pointer"
+            <FormInput
+              name="lastName"
+              id="lastName"
+              type="text"
+              label="Your Last Name"
+              className={`w-full ${errors.lastName ? "border-red-500" : ""}`}
+              placeholder="Enter your Last Name"
+              value={lastName}
+              onChange={(e) => setLastName(e.target.value)}
+              error={!!errors.lastName}
+              errorMessage={errors.lastName}
+              onClose={() => clearError("lastName")}
             />
-          </form>
-        )}
+          </div>
+          <FormInput
+            name="email"
+            id="email"
+            label="Your Email"
+            className={`w-full ${errors.email ? "border-red-500" : ""}`}
+            placeholder="Enter your Email"
+            value={emailValue}
+            onChange={(e) => setEmailValue(e.target.value)}
+            error={!!errors.email}
+            errorMessage={errors.email}
+            onClose={() => clearError("email")}
+          />
+          <ButtonDiv
+            type="submit"
+            option={loading ? <SpinnerLoader /> : "NEXT STEP"}
+            className="outline-none bg-none mt-[1.3125rem] flex justify-center items-center mx-auto text-[0.875rem] leading-[1.025625rem] text-[#D71E0E] font-medium cursor-pointer"
+          />
+        </form>
       </FormWrapper>
+      <div className="mx-auto my-6 flex items-center gap-2">
+        <div className="border border-gray-200 w-[260px]"></div>
+        <span>or</span>
+        <div className="border border-gray-200 w-[260px]"></div>
+      </div>
+      {/* Google Sign In Button */}
+      <div className="mt-6">
+        <button
+          onClick={handleGoogleSignUp}
+          className="px-4 py-2 bg-black text-white outline-none rounded transition-colors border border-gray-300"
+        >
+          Sign up with Google
+        </button>
+      </div>
       <StepProgress currentStep={currentStep} totalSteps={4} />
     </div>
   );

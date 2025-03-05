@@ -27,11 +27,12 @@ export default function IndividualOtpVerification() {
   const [verifyLoading, setVerifyLoading] = useState<boolean>(false);
   const [email, setEmail] = useState<string>("");
 
+  const googleEmail = useSelector((state: RootState) => state.auth.googleEmail);
   const individualStep2 = useSelector(
     (state: RootState) => state.individualRegistration.individualStep2
   );
 
-  const emailFromRedux = individualStep2?.email || "";
+  const emailFromRedux = googleEmail || individualStep2?.email || "";
 
   useEffect(() => {
     if(emailFromRedux) {
@@ -49,7 +50,7 @@ export default function IndividualOtpVerification() {
 
   const handleFinish = async (e: React.FormEvent) => {
     e.preventDefault();
-
+  
     if (!otp) {
       setOtpError("OTP is required.");
       return;
@@ -60,24 +61,31 @@ export default function IndividualOtpVerification() {
       setOtpError("Registration data missing. Please restart registration.");
       return;
     }
-    const email = emailFromRedux;
-    if (!email) {
-      setOtpError("Email missing. Please restart registration.");
+  
+    // Use the email based on whether a Google email exists or fallback to registration email
+    const emailToUse = emailFromRedux;
+    if (!emailToUse) {
+      setOtpError("Registration data missing. Please restart registration.");
       return;
     }
-
-    const dto: VerifyOtpDto = { email, otp };
+  
+    const dto: VerifyOtpDto = { email: emailToUse, otp };
     setVerifyLoading(true);
     try {
       const response = await verifyOtp(dto);
       dispatch(setAccessToken(response.access_token));
       setCurrentStep(currentStep + 1);
-      router.push("/register/individual/registration-successful");
+      if(emailFromRedux === googleEmail){
+        router.push("/sign-in");
+      } else {
+        router.push("/register/individual/registration-successful");
+      }
+      
     } catch (error: any) {
       console.error(error);
       setOtpError(
         error.response?.data?.message ||
-          "OTP verification failed. Please try again."
+        "OTP verification failed. Please try again."
       );
     } finally {
       setVerifyLoading(false);

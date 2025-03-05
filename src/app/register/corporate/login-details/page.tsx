@@ -25,7 +25,7 @@ export default function CorporateLoginDetails() {
   const [emailValue, setEmailValue] = useState<string>("");
   const [error, setError] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(false);
-  const { errors, validateFields, clearError } = useCompanyFormValidation();
+  const { corporateErrors, validateCorporateFields, clearCorporateError } = useCompanyFormValidation();
 
   const corporateStep1 = useSelector(
     (state: RootState) => state.corporateRegistration.corporateStep1
@@ -44,7 +44,7 @@ export default function CorporateLoginDetails() {
       confirmPassword,
     };
 
-    const isValid = validateFields(fields);
+    const isValid = validateCorporateFields(fields);
     if (!isValid) {
       setError("Please fill in all required fields correctly.");
       return;
@@ -111,28 +111,28 @@ export default function CorporateLoginDetails() {
             id="companyEmail"
             type="email"
             label="Company Email"
-            className={`w-full ${errors.companyEmail ? "border-red-500" : ""}`}
+            className={`w-full ${corporateErrors.companyEmail ? "border-red-500" : ""}`}
             placeholder="Enter email"
             labelClassName="font-light text-[#252631]"
             value={emailValue}
             onChange={(e) => setEmailValue(e.target.value)}
-            error={!!errors.companyEmail}
-            errorMessage={errors.companyEmail}
-            onClose={() => clearError("companyEmail")}
+            error={!!corporateErrors.companyEmail}
+            errorMessage={corporateErrors.companyEmail}
+            onClose={() => clearCorporateError("companyEmail")}
           />
           <FormInput
             name="password"
             id="password"
             type="password"
             label="Password"
-            className={`w-full ${errors.password ? "border-red-500" : ""}`}
+            className={`w-full ${corporateErrors.password ? "border-red-500" : ""}`}
             placeholder="Enter Password"
             labelClassName="font-light text-[#252631]"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            error={!!errors.password}
-            errorMessage={errors.password}
-            onClose={() => clearError("password")}
+            error={!!corporateErrors.password}
+            errorMessage={corporateErrors.password}
+            onClose={() => clearCorporateError("password")}
           />
           <FormInput
             name="confirmPassword"
@@ -140,15 +140,15 @@ export default function CorporateLoginDetails() {
             type="password"
             label="Confirm Password"
             className={`w-full ${
-              errors.confirmPassword ? "border-red-500" : ""
+              corporateErrors.confirmPassword ? "border-red-500" : ""
             }`}
             placeholder="Confirm Password"
             labelClassName="font-light text-[#252631]"
             value={confirmPassword}
             onChange={(e) => setConfirmPassword(e.target.value)}
-            error={!!errors.confirmPassword}
-            errorMessage={errors.confirmPassword}
-            onClose={() => clearError("confirmPassword")}
+            error={!!corporateErrors.confirmPassword}
+            errorMessage={corporateErrors.confirmPassword}
+            onClose={() => clearCorporateError("confirmPassword")}
           />
           <ButtonDiv
             option={loading ? <SpinnerLoader /> : "VERIFY ACCOUNT"}

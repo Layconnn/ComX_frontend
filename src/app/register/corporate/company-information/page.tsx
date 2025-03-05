@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useDispatch } from "react-redux";
 import { setCorporateRegistrationStep1 } from "@/redux/slices/corporateRegistrationSlice";
+import { setAccountType } from "@/redux/slices/registrationSlice";
 import { useRegistration } from "@/contexts/registrationContext";
 import StepProgress from "@/components/stepProgress";
 import FormWrapper from "@/components/formWrapper";
@@ -17,15 +18,13 @@ export default function CompanyRegistration() {
   const router = useRouter();
   const dispatch = useDispatch();
   const { currentStep, setCurrentStep } = useRegistration();
-  const [accountType, setAccountType] = useState<"individual" | "corporate">(
-    "corporate"
-  );
   const [companyName, setCompanyName] = useState<string>("");
   const [businessType, setBusinessType] = useState<string>("");
   const [dateOfIncorporation, setDateOfIncorporation] = useState<string>("");
   const [globalError, setGlobalError] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(false);
-  const { errors, validateFields, clearError } = useCompanyFormValidation();
+  const { corporateErrors, validateCorporateFields, clearCorporateError } =
+    useCompanyFormValidation();
 
   useEffect(() => {
     setCurrentStep(1);
@@ -35,7 +34,7 @@ export default function CompanyRegistration() {
     if (type === "individual") {
       router.push("/register/individual/basic-information");
     } else {
-      setAccountType("corporate");
+      dispatch(setAccountType("corporate"));
     }
   };
 
@@ -48,16 +47,14 @@ export default function CompanyRegistration() {
       dateOfIncorporation,
     };
 
-    const isValid = validateFields(fields);
+    const isValid = validateCorporateFields(fields);
     if (!isValid) {
       setGlobalError("Please fill in all fields correctly.");
       return;
     }
     setGlobalError("");
-    console.log("Form submitted:", fields);
-
-     
-  dispatch(setCorporateRegistrationStep1(fields));
+    dispatch(setCorporateRegistrationStep1(fields));
+    dispatch(setAccountType("corporate"));
 
     setLoading(true);
     setTimeout(() => {
@@ -66,6 +63,14 @@ export default function CompanyRegistration() {
       setLoading(false);
     }, 1000);
   };
+  
+  const handleGoogleSignUp = () => {
+    dispatch(setAccountType("corporate"));
+    const googleRedirectUrl = `${process.env.NEXT_PUBLIC_API_URL}/auth/google-redirect?accountType=corporate`;
+    window.location.href = googleRedirectUrl;
+  };
+  
+  
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-gray-100 p-4">
@@ -93,94 +98,97 @@ export default function CompanyRegistration() {
           <ButtonDiv
             option="Individual"
             onClick={() => handleAccountTypeChange("individual")}
-            className={`flex-1 py-[1.125rem] pl-[2.6875rem] pr-[2.625rem] text-center border transition-colors max-w-[9.125rem] ${
-              accountType === "individual"
-                ? "bg-black text-white border-black"
-                : "bg-white text-black border-gray-300 hover:bg-black hover:text-white hover:border-black"
-            }`}
+            className={`flex-1 py-[1.125rem] pl-[2.6875rem] pr-[2.625rem] text-center border transition-colors max-w-[9.125rem] ${"bg-white text-black border-gray-300 hover:bg-black hover:text-white hover:border-black"}`}
           />
           <ButtonDiv
             option="Corporate"
             onClick={() => handleAccountTypeChange("corporate")}
-            className={`flex-1 pl-[2.65625rem] pr-[2.59375rem] pt-4 pb-[0.9375rem] text-center border transition-colors max-w-[9.125rem] ${
-              accountType === "corporate"
-                ? "bg-black text-white border-black"
-                : "bg-white text-black border-gray-300 hover:bg-black hover:text-white hover:border-black"
-            }`}
+            className={`flex-1 pl-[2.65625rem] pr-[2.59375rem] pt-4 pb-[0.9375rem] text-center border transition-colors max-w-[9.125rem] ${"bg-black text-white border-black hover:bg-[#2c2828]"}`}
           />
         </div>
-        {accountType === "corporate" && (
-          <form onSubmit={handleSubmit}>
-            <FormInput
-              name="companyName"
-              id="companyName"
-              label="Your Company Name"
-              className={`w-full ${errors.companyName ? "border-red-500" : ""}`}
-              placeholder="Enter Company Name"
-              value={companyName}
-              onChange={(e) => setCompanyName(e.target.value)}
-              error={!!errors.companyName}
-              errorMessage={errors.companyName}
-              onClose={() => clearError("companyName")}
-            />
-            <div className="flex gap-[1.28125rem] mb-[1.3125rem] items-center max-[640px]:flex-col max-[640px]:gap-0">
-              <div className="mb-5 max-[640px]:w-full">
-                <label className="text-[0.875rem] leading-[1.025625rem] font-medium">
-                  Type of Business
-                </label>
-                <select
-                  name="businessType"
-                  id="businessType"
-                  value={businessType}
-                  onChange={(e) => setBusinessType(e.target.value)}
-                  className={`appearance-none pl-4 pb-4 pt-[0.875rem] text-[0.875rem] rounded-[0.125rem] text-[#98A9BC] border border-[#E8ECEF] mt-[0.875rem] pr-[15.5px] w-full ${
-                    errors.businessType ? "border-red-500" : ""
-                  }`}
-                  style={{
-                    backgroundImage: "url('/arrow-down.svg')",
-                    backgroundRepeat: "no-repeat",
-                    backgroundPosition: "calc(100% - 15.5px) center",
-                  }}
-                >
-                  <option value="">Select type of Business</option>
-                  <option value="RETAIL">RETAIL</option>
-                  <option value="SERVICE">SERVICE</option>
-                  <option value="MANUFACTURING">MANUFACTURING</option>
-                </select>
-
-                {errors.businessType && (
-                  <ErrorMessage
-                    message={errors.businessType}
-                    isNotification={false}
-                    onClose={() => clearError("businessType")}
-                  />
-                )}
-              </div>
-              <FormInput
-                name="dateOfIncorporation"
-                id="dateOfIncorporation"
-                type="date"
-                label="Date of Incorporation"
-                className={`w-full pr-[1.15625rem] text-[#98A9BC] ${
-                  errors.dateOfIncorporation ? "border-red-500" : ""
+        <form onSubmit={handleSubmit}>
+          <FormInput
+            name="companyName"
+            id="companyName"
+            label="Your Company Name"
+            className={`w-full ${
+              corporateErrors.companyName ? "border-red-500" : ""
+            }`}
+            placeholder="Enter Company Name"
+            value={companyName}
+            onChange={(e) => setCompanyName(e.target.value)}
+            error={!!corporateErrors.companyName}
+            errorMessage={corporateErrors.companyName}
+            onClose={() => clearCorporateError("companyName")}
+          />
+          <div className="flex gap-[1.28125rem] mb-[1.3125rem] items-center max-[640px]:flex-col max-[640px]:gap-0">
+            <div className="mb-5 max-[640px]:w-full">
+              <label className="text-[0.875rem] leading-[1.025625rem] font-medium">
+                Type of Business
+              </label>
+              <select
+                name="businessType"
+                id="businessType"
+                value={businessType}
+                onChange={(e) => setBusinessType(e.target.value)}
+                className={`appearance-none pl-4 pb-4 pt-[0.875rem] text-[0.875rem] rounded-[0.125rem] text-black border border-[#E8ECEF] mt-[0.875rem] pr-[15.5px] w-full ${
+                  corporateErrors.businessType ? "border-red-500" : ""
                 }`}
-                value={dateOfIncorporation}
-                onChange={(e) => setDateOfIncorporation(e.target.value)}
-                error={!!errors.dateOfIncorporation}
-                errorMessage={errors.dateOfIncorporation}
-                onClose={() => clearError("dateOfIncorporation")}
-              />
+                style={{
+                  backgroundImage: "url('/arrow-down.svg')",
+                  backgroundRepeat: "no-repeat",
+                  backgroundPosition: "calc(100% - 15.5px) center",
+                }}
+              >
+                <option value="">Select type of Business</option>
+                <option value="RETAIL">RETAIL</option>
+                <option value="SERVICE">SERVICE</option>
+                <option value="MANUFACTURING">MANUFACTURING</option>
+              </select>
+              {corporateErrors.businessType && (
+                <ErrorMessage
+                  message={corporateErrors.businessType}
+                  isNotification={false}
+                  onClose={() => clearCorporateError("businessType")}
+                />
+              )}
             </div>
-
-            <ButtonDiv
-              type="submit"
-              option={loading ? <SpinnerLoader/> : "NEXT STEP"}
-              className="outline-none bg-none flex justify-center items-center mx-auto text-[0.875rem] leading-[1.025625rem] text-[#D71E0E] font-medium cursor-pointer"
-              
+            <FormInput
+              name="dateOfIncorporation"
+              id="dateOfIncorporation"
+              type="date"
+              label="Date of Incorporation"
+              className={`w-full pr-[1.15625rem] text-black ${
+                corporateErrors.dateOfIncorporation ? "border-red-500" : ""
+              }`}
+              value={dateOfIncorporation}
+              onChange={(e) => setDateOfIncorporation(e.target.value)}
+              error={!!corporateErrors.dateOfIncorporation}
+              errorMessage={corporateErrors.dateOfIncorporation}
+              onClose={() => clearCorporateError("dateOfIncorporation")}
             />
-          </form>
-        )}
+          </div>
+          <ButtonDiv
+            type="submit"
+            option={loading ? <SpinnerLoader /> : "NEXT STEP"}
+            className="outline-none bg-none flex justify-center items-center mx-auto text-[0.875rem] leading-[1.025625rem] text-[#D71E0E] font-medium cursor-pointer"
+          />
+        </form>
       </FormWrapper>
+      <div className="mx-auto my-6 flex items-center gap-2">
+        <div className="border border-gray-200 w-[260px]"></div>
+        <span>or</span>
+        <div className="border border-gray-200 w-[260px]"></div>
+      </div>
+      {/* Google Sign In Button */}
+      <div className="mt-6">
+        <button
+          onClick={handleGoogleSignUp}
+          className="px-4 py-2 bg-black text-white outline-none rounded transition-colors border border-gray-300"
+        >
+          Sign up with Google
+        </button>
+      </div>
       <StepProgress currentStep={currentStep} totalSteps={4} />
     </div>
   );
