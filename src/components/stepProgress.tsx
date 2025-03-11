@@ -15,7 +15,7 @@ export default function StepProgress({
   const progressPercentage = (safeCurrentStep / totalSteps) * 100;
 
   return (
-    <div className="w-full max-w-md mx-auto mt-[4.3125rem] mb-8 max-[640px]:mt-[1.5rem]">
+    <div className="w-full max-w-[34.6875rem] mx-auto mt-[4.3125rem] mb-8 max-[640px]:mt-[1.5rem]">
       <div className="text-center text-sm font-medium">
         <span className="font-bold text-[#252631]">{safeCurrentStep}</span>
         <span

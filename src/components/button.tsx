@@ -1,8 +1,10 @@
+/* eslint-disable @next/next/no-img-element */
 import React from "react";
 
 interface ButtonDivProps extends React.HTMLAttributes<HTMLButtonElement> {
   option: string | React.JSX.Element;
   type?: "button" | "submit" | "reset";
+  image?: string; // optional image URL
 }
 
 export default function ButtonDiv({
@@ -10,6 +12,7 @@ export default function ButtonDiv({
   type = "button",
   className,
   onClick,
+  image,
   ...props
 }: ButtonDivProps) {
   return (
@@ -21,6 +24,7 @@ export default function ButtonDiv({
       onClick={onClick}
       className={`cursor-pointer outline-none transition flex justify-center items-center rounded-[0.125rem] max-[400px]:p-4 ${className}`}
     >
+      {image && <img src={image} alt="button icon" className="mr-2" />}
       {option}
     </button>
   );

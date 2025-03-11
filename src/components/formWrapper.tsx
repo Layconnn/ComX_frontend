@@ -17,7 +17,7 @@ export default function FormWrapper({
   success = false,
 }: FormWrapperProps) {
   return (
-    <div className={`pt-12 px-[3.0625rem] pb-[2.6875rem] max-w-[34.6875rem] w-full bg-white mx-auto rounded mix-h-[35.625rem] h-full mb-8 ${className} max-[640px]:p-8`}>
+    <div className={`pt-12 px-[3.0625rem] pb-[2.6875rem] max-w-[34.6875rem] w-full bg-white mx-auto rounded mix-h-[35.625rem] h-full ${className} max-[640px]:p-8`}>
       <div className="mb-[2.5rem] max-[400px]:mb-6">
         {success && (
           <div className="flex justify-center mb-6 mt-[1.75rem]">

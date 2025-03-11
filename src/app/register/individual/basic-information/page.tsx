@@ -1,7 +1,7 @@
 /* eslint-disable @next/next/no-img-element */
 "use client";
 import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useDispatch } from "react-redux";
 import { setIndividualRegistrationStep1 } from "@/redux/slices/individualRegistrationSlice";
 import { setAccountType } from "@/redux/slices/registrationSlice";
@@ -17,13 +17,22 @@ import SpinnerLoader from "@/components/spinnerLoader";
 export default function BasicInformation() {
   const router = useRouter();
   const dispatch = useDispatch();
+  const searchParams = useSearchParams();
+  const errorFromUrl = searchParams.get("error") || "";
   const { setCurrentStep, currentStep } = useRegistration();
-  const [error, setError] = useState<string>("");
+  const [error, setError] = useState<string>(errorFromUrl);
   const [firstName, setFirstName] = useState<string>("");
   const [lastName, setLastName] = useState<string>("");
   const [emailValue, setEmailValue] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(false);
   const { errors, validateFields, clearError } = useFormValidation();
+
+  useEffect(() => {
+    if (error) {
+      const timer = setTimeout(() => setError(""), 5000);
+      return () => clearTimeout(timer);
+    }
+  }, [error]);
 
   useEffect(() => {
     setCurrentStep(1);
@@ -141,21 +150,19 @@ export default function BasicInformation() {
           />
         </form>
       </FormWrapper>
-      <div className="mx-auto my-6 flex items-center gap-2">
-        <div className="border border-gray-200 w-[260px]"></div>
-        <span>or</span>
-        <div className="border border-gray-200 w-[260px]"></div>
+      <StepProgress currentStep={currentStep} totalSteps={4} />
+      <div className="mx-auto my-6 flex items-center gap-2 max-w-[34.6875rem] w-full">
+        <div className="border border-gray-200 w-full"></div>
+        <span className="w-full text-center">or sign up with</span>
+        <div className="border border-gray-200 w-full"></div>
       </div>
       {/* Google Sign In Button */}
-      <div className="mt-6">
-        <button
-          onClick={handleGoogleSignUp}
-          className="px-4 py-2 bg-black text-white outline-none rounded transition-colors border border-gray-300"
-        >
-          Sign up with Google
-        </button>
-      </div>
-      <StepProgress currentStep={currentStep} totalSteps={4} />
+      <ButtonDiv
+        className="bg-white border border-[#EEEFF2] py-[1.0625rem] max-w-[34.6875rem] w-full hover:bg-gray-200"
+        option={'Google'}
+        image="/google.svg"
+        onClick={handleGoogleSignUp}
+        />
     </div>
   );
 }

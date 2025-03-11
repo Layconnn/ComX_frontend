@@ -1,7 +1,7 @@
 /* eslint-disable @next/next/no-img-element */
 "use client";
 import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useDispatch } from "react-redux";
 import { setCorporateRegistrationStep1 } from "@/redux/slices/corporateRegistrationSlice";
 import { setAccountType } from "@/redux/slices/registrationSlice";
@@ -17,14 +17,23 @@ import SpinnerLoader from "@/components/spinnerLoader";
 export default function CompanyRegistration() {
   const router = useRouter();
   const dispatch = useDispatch();
+  const searchParams = useSearchParams();
+  const errorFromUrl = searchParams.get("error") || "";
   const { currentStep, setCurrentStep } = useRegistration();
   const [companyName, setCompanyName] = useState<string>("");
   const [businessType, setBusinessType] = useState<string>("");
   const [dateOfIncorporation, setDateOfIncorporation] = useState<string>("");
-  const [globalError, setGlobalError] = useState<string>("");
+  const [globalError, setGlobalError] = useState<string>(errorFromUrl);
   const [loading, setLoading] = useState<boolean>(false);
   const { corporateErrors, validateCorporateFields, clearCorporateError } =
     useCompanyFormValidation();
+
+  useEffect(() => {
+    if (globalError) {
+      const timer = setTimeout(() => setGlobalError(""), 5000);
+      return () => clearTimeout(timer);
+    }
+  }, [globalError]);
 
   useEffect(() => {
     setCurrentStep(1);
@@ -63,14 +72,12 @@ export default function CompanyRegistration() {
       setLoading(false);
     }, 1000);
   };
-  
+
   const handleGoogleSignUp = () => {
     dispatch(setAccountType("corporate"));
     const googleRedirectUrl = `${process.env.NEXT_PUBLIC_API_URL}/auth/google-redirect?accountType=corporate`;
     window.location.href = googleRedirectUrl;
   };
-  
-  
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-gray-100 p-4">
@@ -175,21 +182,19 @@ export default function CompanyRegistration() {
           />
         </form>
       </FormWrapper>
-      <div className="mx-auto my-6 flex items-center gap-2">
-        <div className="border border-gray-200 w-[260px]"></div>
-        <span>or</span>
-        <div className="border border-gray-200 w-[260px]"></div>
+      <StepProgress currentStep={currentStep} totalSteps={4} />
+      <div className="mx-auto my-6 flex items-center gap-2 max-w-[34.6875rem] w-full">
+        <div className="border border-gray-200 w-full"></div>
+        <span className="w-full text-center">or sign up with</span>
+        <div className="border border-gray-200 w-full"></div>
       </div>
       {/* Google Sign In Button */}
-      <div className="mt-6">
-        <button
-          onClick={handleGoogleSignUp}
-          className="px-4 py-2 bg-black text-white outline-none rounded transition-colors border border-gray-300"
-        >
-          Sign up with Google
-        </button>
-      </div>
-      <StepProgress currentStep={currentStep} totalSteps={4} />
+      <ButtonDiv
+        className="bg-white border border-[#EEEFF2] py-[1.0625rem] max-w-[34.6875rem] w-full hover:bg-gray-200"
+        option={"Google"}
+        image="/google.svg"
+        onClick={handleGoogleSignUp}
+      />
     </div>
   );
 }
